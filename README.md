@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Adithyan Raj - Weekly Learning Journey
 
 **Data Science Student @ Muthoot Institute of Science and Engineering (MISE)**
@@ -7,7 +6,7 @@ This repository tracks my weekly learning and project development from Week 1 to
 
 ---
 
-## 📚 Weekly Progress
+## Weekly Progress
 
 ### [Week 1: Data Science Portfolio](./week-1/README.md)
 **Status:** In Progress
@@ -15,44 +14,42 @@ This repository tracks my weekly learning and project development from Week 1 to
 - **Project:** Personal Data Science Portfolio Website
 - **Skills:** HTML, CSS, JavaScript, Web Design, Responsive Design
 - **Highlights:**
-  - Built modern, dark-themed portfolio website
-  - Showcased 3 real projects (P2P Learning, Quantitative Finance, Gen Z Bot)
-  - Professional design with animations and hover effects
-  - Fully responsive mobile-first design
+	- Built modern, dark-themed portfolio website
+	- Showcased 3 real projects (P2P Learning, Quantitative Finance, Gen Z Bot)
+	- Professional design with animations and hover effects
+	- Fully responsive mobile-first design
 
 **View:** [Week 1 Portfolio](./week-1/index.html)
 
 ---
 
----
-
-## 🔗 Quick Links
+## Quick Links
 
 | Week | Project | Status |
 |------|---------|--------|
-| [1](./week-1) | Data Science Portfolio | ⏳ In Progress |
-| 2-12 | *Coming with tasks* | ⏳ Pending |
+| [1](./week-1) | Data Science Portfolio | In Progress |
+| 2-12 | *Coming with tasks* | Pending |
 
 **Note:** New week folders will be created as tasks are assigned.
 
 ---
 
-## 👨‍💻 About Me
+## About Me
 
 I'm a passionate **Data Scientist & Engineer** specializing in:
-- 🐍 Python & Data Analysis
-- 🤖 Machine Learning & Scikit-learn
-- 📊 Quantitative Finance & Analytics
-- 🔄 Apache Airflow & ETL
-- 💾 SQL & NoSQL Databases
-- 📈 Statistical Modeling & Pandas
+- Python & Data Analysis
+- Machine Learning & Scikit-learn
+- Quantitative Finance & Analytics
+- Apache Airflow & ETL
+- SQL & NoSQL Databases
+- Statistical Modeling & Pandas
 
-**Education:** Computer Science Student at MISE  
+**Education:** Computer Science Student at MISE
 **GitHub:** [quantum-coderX](https://github.com/quantum-coderX)
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 Innovature/
@@ -62,18 +59,16 @@ Innovature/
 │   ├── contact.html
 │   ├── css/
 │   ├── js/
-│   ├── assets/
-│   └── README.md
+│   └── assets/
 ├── week-2/              # (Upcoming)
 ├── week-3/              # (Upcoming)
-...
-├── week-12/             # (Upcoming)
-└── README.md            # This file
+├── ...
+└── week-12/             # (Upcoming)
 ```
 
 ---
 
-## 🚀 How to Use This Repo
+## How to Use This Repo
 
 Each week folder contains:
 - **README.md** - Week-specific project details
@@ -88,13 +83,13 @@ cd week-1/
 
 ---
 
-## 📝 Notes
+## Notes
 
 This is an ongoing project tracking my learning journey. Each week, I'll add new projects, skills, and accomplishments. Follow along to see my growth as a data scientist and engineer!
 
 ---
 
-**Last Updated:** January 29, 2026  
+**Last Updated:** January 29, 2026
 **Current Week:** 1
 
 ## Installation & Setup
@@ -141,25 +136,24 @@ cd Innovature
 ## Customization
 
 ### Colors
-Edit CSS variables in `css/style.css`:
+Edit CSS variables in `week-1/css/style.css`:
 ```css
 :root {
-    --primary-color: #2563eb;
-    --secondary-color: #1e40af;
-    --accent-color: #dc2626;
-    /* ... more variables */
+		--primary-color: #2563eb;
+		--secondary-color: #1e40af;
+		--accent-color: #dc2626;
 }
 ```
 
 ### Projects
-Edit `projects.html` to add/modify your projects:
+Edit `week-1/projects.html` to add/modify your projects:
 - Update project images
 - Change descriptions
 - Modify project links
 - Update technology tags
 
 ### Contact Info
-Update contact details in `contact.html`:
+Update contact details in `week-1/contact.html`:
 - Email address
 - Phone number
 - Location
@@ -171,7 +165,7 @@ Update contact details in `contact.html`:
 
 1. Push your code to GitHub
 2. Go to repository Settings → Pages
-3. Select main branch as source
+3. Select `main` branch as source
 4. Save
 5. Your site will be available at: `https://yourusername.github.io/Innovature`
 
@@ -213,7 +207,6 @@ The contact form is set for **dummy submission** - it validates fields and logs 
 - Vanilla JavaScript (no dependencies)
 - Optimized images with placeholders
 - Lazy loading support for images
-- Fast page load times
 
 ## Accessibility
 
@@ -233,8 +226,5 @@ Adithyan Raj - [GitHub](https://github.com/quantum-coderX) | [LinkedIn](https://
 
 ---
 
-**Last Updated**: January 28, 2025
-=======
-# Innovature
-repo for tasks and assignments for internship at Innovature
->>>>>>> origin/main
+**Last Updated**: January 29, 2026
+
