@@ -1,6 +1,6 @@
 # Adithyan Raj - Weekly Learning Journey
 
-**Data Science Student @ Muthoot Institute of Science and Engineering (MISE)**
+**CSE STUDENT @ MUTHOOT INSTITUTE OF TECHNOLOGY AND SCIENCE (MITS)**
 
 This repository tracks my weekly learning and project development from Week 1 to Week 12. Each week contains new projects, skills, and accomplishments.
 
