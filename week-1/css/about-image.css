@@ -1,0 +1,29 @@
+/* About Image Styling */
+.about-image {
+    text-align: center;
+}
+
+.about-image img {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #2563eb;
+    box-shadow: 0 12px 40px rgba(37, 99, 235, 0.4);
+    transition: all 0.4s ease;
+}
+
+.about-image img:hover {
+    transform: scale(1.08);
+    box-shadow: 0 16px 50px rgba(37, 99, 235, 0.5);
+}
+
+/* Update about-content grid for 2-column layout */
+@media (min-width: 768px) {
+    .about-content {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 60px;
+        align-items: center;
+    }
+}
