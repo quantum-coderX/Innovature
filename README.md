@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Adithyan Raj - Weekly Learning Journey
 
 **Data Science Student @ Muthoot Institute of Science and Engineering (MISE)**
@@ -233,3 +234,7 @@ Adithyan Raj - [GitHub](https://github.com/quantum-coderX) | [LinkedIn](https://
 ---
 
 **Last Updated**: January 28, 2025
+=======
+# Innovature
+repo for tasks and assignments for internship at Innovature
+>>>>>>> origin/main
