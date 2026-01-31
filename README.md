@@ -145,61 +145,7 @@ Edit CSS variables in `week-1/css/style.css`:
 }
 ```
 
-### Projects
-Edit `week-1/projects.html` to add/modify your projects:
-- Update project images
-- Change descriptions
-- Modify project links
-- Update technology tags
 
-### Contact Info
-Update contact details in `week-1/contact.html`:
-- Email address
-- Phone number
-- Location
-- Social media links
-
-## GitHub Pages Deployment
-
-### Using GitHub Pages:
-
-1. Push your code to GitHub
-2. Go to repository Settings → Pages
-3. Select `main` branch as source
-4. Save
-5. Your site will be available at: `https://yourusername.github.io/Innovature`
-
-### Custom Domain (Optional)
-1. Add CNAME file with your domain
-2. Update DNS settings with GitHub
-3. Enable HTTPS in Settings
-
-## Testing
-
-### Desktop Testing
-- Chrome DevTools
-- Firefox Developer Tools
-- Safari Web Inspector
-
-### Mobile Testing
-- Chrome DevTools (device emulation)
-- Firefox Developer Tools (responsive design mode)
-- Physical devices (iPhone, Android)
-
-### Form Validation Testing
-- Test required fields
-- Test email validation
-- Test phone validation
-- Test success message
-- Check browser console for logs
-
-## Contact Form Note
-
-The contact form is set for **dummy submission** - it validates fields and logs data to the browser console. To enable real email submission, integrate with a backend service or use a service like:
-- Formspree
-- Netlify Forms
-- AWS Lambda
-- Firebase
 
 ## Performance
 
@@ -226,5 +172,5 @@ Adithyan Raj - [GitHub](https://github.com/quantum-coderX) | [LinkedIn](https://
 
 ---
 
-**Last Updated**: January 29, 2026
+**Last Updated**: January 31, 2026
 
