@@ -44,7 +44,7 @@ I'm a passionate **Data Scientist & Engineer** specializing in:
 - SQL & NoSQL Databases
 - Statistical Modeling & Pandas
 
-**Education:** Computer Science Student at MISE
+**Education:** Computer Science Student at MITS
 **GitHub:** [quantum-coderX](https://github.com/quantum-coderX)
 
 ---

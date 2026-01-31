@@ -24,19 +24,66 @@ navLinks.forEach(link => {
 
 // Highlight active navigation link
 function updateActiveLink() {
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        const href = link.getAttribute('href');
-        if (href === currentPage || (currentPage === '' && href === 'index.html')) {
-            link.classList.add('active');
+    // For anchor-based navigation, highlight based on scroll position
+    // This will be handled by the scroll event listener
+    updateActiveSectionOnScroll();
+// ============================================
+// Scroll-based Active Section Highlighting
+// ============================================
+
+// Track active section based on scroll position
+function updateActiveSectionOnScroll() {
+    const sections = document.querySelectorAll('section[id]');
+    const scrollPosition = window.scrollY + 150; // Offset for header height
+
+    let currentSection = null;
+    let maxVisibility = 0;
+
+    sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        const sectionTop = window.scrollY + rect.top;
+        const sectionBottom = sectionTop + rect.height;
+
+        // Calculate how much of the section is visible
+        const visibleTop = Math.max(scrollPosition, sectionTop);
+        const visibleBottom = Math.min(scrollPosition + window.innerHeight, sectionBottom);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+        const visibilityRatio = visibleHeight / rect.height;
+
+        if (visibilityRatio > maxVisibility && visibilityRatio > 0.3) { // At least 30% visible
+            maxVisibility = visibilityRatio;
+            currentSection = section;
         }
     });
+
+    // If no section is sufficiently visible (at top of page), default to about section
+    if (!currentSection && window.scrollY < 100) {
+        currentSection = document.getElementById('about');
+    }
+
+    if (currentSection) {
+        const sectionId = currentSection.getAttribute('id');
+        // Only highlight if there's a corresponding nav link with anchor href
+        const correspondingLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
+
+        if (correspondingLink) {
+            // Remove active class from all links
+            navLinks.forEach(link => link.classList.remove('active'));
+            // Add active class to current section link
+            correspondingLink.classList.add('active');
+        }
+    }
 }
 
 // Update active link on page load
-document.addEventListener('DOMContentLoaded', updateActiveLink);
+document.addEventListener('DOMContentLoaded', () => {
+    updateActiveLink();
+    // Also trigger scroll-based highlighting after a short delay to ensure DOM is ready
+    setTimeout(updateActiveSectionOnScroll, 100);
+});
+
+// Add scroll event listener for dynamic highlighting
+window.addEventListener('scroll', updateActiveSectionOnScroll);
 
 // ============================================
 // Contact Form Validation & Submission
@@ -53,6 +100,7 @@ if (contactForm) {
         },
         email: {
             validate: (value) => {
+                if (value.trim() === '') return true; // Optional field
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(value);
             },
@@ -81,13 +129,6 @@ if (contactForm) {
         const field = document.getElementById(fieldName);
         const errorElement = document.getElementById(fieldName + 'Error');
         const rule = validationRules[fieldName];
-
-        if (field.type === 'email' && field.value.trim() === '' && !field.required) {
-            // Skip validation for optional email fields
-            field.classList.remove('error');
-            if (errorElement) errorElement.textContent = '';
-            return true;
-        }
 
         const isValid = rule.validate(field.value);
 
@@ -160,7 +201,9 @@ if (contactForm) {
 
             // Scroll to success message
             setTimeout(() => {
-                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (successMessage) {
+                    successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }, 100);
         } else {
             console.log('Form validation failed');
@@ -199,20 +242,32 @@ async function sendFormData(formData) {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Handle initial hash navigation on page load
+    if (window.location.hash) {
+        const targetSection = document.querySelector(window.location.hash);
+        if (targetSection) {
+            setTimeout(() => {
+                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }
+
     // Add smooth scrolling for anchor links
     const links = document.querySelectorAll('a[href^="#"]');
-    
+
     links.forEach(link => {
         link.addEventListener('click', (e) => {
             const href = link.getAttribute('href');
             const target = document.querySelector(href);
-            
+
             if (target) {
                 e.preventDefault();
                 target.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
+                // Update URL hash without triggering scroll
+                history.pushState(null, null, href);
             }
         });
     });
@@ -243,4 +298,4 @@ if ('IntersectionObserver' in window) {
 // Utility: Log app initialization
 // ============================================
 
-console.log('Portfolio website loaded successfully!');
+console.log('Portfolio website loaded successfully!');}
