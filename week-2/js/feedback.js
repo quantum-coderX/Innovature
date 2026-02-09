@@ -28,7 +28,7 @@ function displayFeedbacks() {
         feedbackDiv.className = 'feedback-item';
 
         // Get first letter of name for avatar
-        const firstLetter = feedback.name.charAt(0).toUpperCase();
+        const firstLetter = feedback.firstName ? feedback.firstName.charAt(0).toUpperCase() : 'U';
 
         const headerDiv = document.createElement('div');
         headerDiv.className = 'feedback-item-header';
@@ -42,7 +42,7 @@ function displayFeedbacks() {
 
         const nameP = document.createElement('p');
         nameP.className = 'feedback-name';
-        nameP.textContent = feedback.name;
+        nameP.textContent = `${feedback.firstName} ${feedback.lastName}`;
 
         const emailP = document.createElement('p');
         emailP.className = 'feedback-email';
@@ -54,16 +54,16 @@ function displayFeedbacks() {
         headerDiv.appendChild(avatarDiv);
         headerDiv.appendChild(metaDiv);
 
-        const messageP = document.createElement('p');
-        messageP.className = 'feedback-message';
-        messageP.textContent = feedback.message;
+        const suggestionsP = document.createElement('p');
+        suggestionsP.className = 'feedback-suggestions';
+        suggestionsP.textContent = feedback.suggestions ? `Suggestions: ${feedback.suggestions}` : 'No suggestions provided';
 
         const timestampP = document.createElement('p');
         timestampP.className = 'feedback-timestamp';
         timestampP.textContent = new Date(feedback.timestamp).toLocaleString();
 
         feedbackDiv.appendChild(headerDiv);
-        feedbackDiv.appendChild(messageP);
+        feedbackDiv.appendChild(suggestionsP);
         feedbackDiv.appendChild(timestampP);
 
         feedbackList.appendChild(feedbackDiv);

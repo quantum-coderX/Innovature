@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback Form - Week 2</title>
+    <title>Feedback Form</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -13,18 +13,21 @@
     <main>
         <form id="feedbackForm">
             <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                <label for="name">Name</label>
+                <div class="name-fields">
+                    <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+                    <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+                </div>
             </div>
             <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                <label for="email">Gmail Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your Gmail address" required>
             </div>
             <div class="form-group">
-                <label for="message">Message:</label>
-                <textarea id="message" name="message" placeholder="Share your feedback with us..." required></textarea>
+                <label for="suggestions">Do you have suggestions on what we can do to provide you with a better service?</label>
+                <textarea id="suggestions" name="suggestions" placeholder="Share your suggestions..."></textarea>
             </div>
-            <button type="submit">Submit Feedback</button>
+            <button type="submit">Submit</button>
         </form>
     </main>
     <script src="js/script.js"></script>

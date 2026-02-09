@@ -21,6 +21,22 @@ This repository tracks my weekly learning and project development from Week 1 to
 
 **View:** [Week 1 Portfolio](./week-1/index.html)
 
+### [Week 2: Interactive Feedback Form](./week-2/README.md)
+**Status:** Completed ✅
+
+- **Project:** Modern Glassmorphism Feedback Collection System
+- **Skills:** HTML5, CSS3 (Glassmorphism), JavaScript (ES6), Form Validation, localStorage
+- **Highlights:**
+	- Beautiful glassmorphism UI with frosted glass effects
+	- Gmail address validation with case-insensitive regex
+	- Real-time form validation with detailed error messages
+	- localStorage-based data persistence
+	- Responsive pagination for feedback display
+	- Modern gradient backgrounds with smooth animations
+	- Input sanitization and data security
+
+**View:** [Week 2 Feedback Form](./week-2/index.html) | [View Submissions](./week-2/feedback.html)
+
 ---
 
 ## Quick Links
@@ -28,7 +44,8 @@ This repository tracks my weekly learning and project development from Week 1 to
 | Week | Project | Status |
 |------|---------|--------|
 | [1](./week-1) | Data Science Portfolio | In Progress |
-| 2-12 | *Coming with tasks* | Pending |
+| [2](./week-2) | Interactive Feedback Form | Completed ✅ |
+| 3-12 | *Coming with tasks* | Pending |
 
 **Note:** New week folders will be created as tasks are assigned.
 
@@ -60,7 +77,14 @@ Innovature/
 │   ├── css/
 │   ├── js/
 │   └── assets/
-├── week-2/              # (Upcoming)
+├── week-2/              # Interactive Feedback Form
+│   ├── index.html       # Feedback submission form
+│   ├── feedback.html    # Feedback display page
+│   ├── css/
+│   │   └── style.css    # Glassmorphism styling
+│   └── js/
+│       ├── script.js    # Form validation & submission
+│       └── feedback.js  # Feedback display logic
 ├── week-3/              # (Upcoming)
 ├── ...
 └── week-12/             # (Upcoming)
@@ -89,8 +113,8 @@ This is an ongoing project tracking my learning journey. Each week, I'll add new
 
 ---
 
-**Last Updated:** January 29, 2026
-**Current Week:** 1
+**Last Updated:** February 9, 2026
+**Current Week:** 2
 
 ## Installation & Setup
 
@@ -172,5 +196,5 @@ Adithyan Raj - [GitHub](https://github.com/quantum-coderX) | [LinkedIn](https://
 
 ---
 
-**Last Updated**: January 31, 2026
+**Last Updated**: February 9, 2026
 

@@ -1,34 +1,37 @@
 document.getElementById('feedbackForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const name = document.getElementById('name').value.trim();
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
     const email = document.getElementById('email').value.trim();
-    const message = document.getElementById('message').value.trim();
+    const suggestions = document.getElementById('suggestions').value.trim();
     
     // Validation
-    if (!name) {
-        alert('Name is required.');
+    if (!firstName || !lastName) {
+        alert('Full name is required.');
         return;
     }
-    if (!email || !isValidEmail(email)) {
-        alert('Please enter a valid email.');
+    if (!email) {
+        alert('Email is required.');
         return;
     }
-    if (!message) {
-        alert('Message is required.');
+    if (!isValidGmail(email)) {
+        alert('Please enter a valid Gmail address (must end with @gmail.com). Current: ' + email);
         return;
     }
     
     // Sanitization
-    const sanitizedName = sanitizeInput(name);
+    const sanitizedFirstName = sanitizeInput(firstName);
+    const sanitizedLastName = sanitizeInput(lastName);
     const sanitizedEmail = sanitizeInput(email);
-    const sanitizedMessage = sanitizeInput(message);
+    const sanitizedSuggestions = sanitizeInput(suggestions);
     
     // Store in localStorage
     const feedback = {
-        name: sanitizedName,
+        firstName: sanitizedFirstName,
+        lastName: sanitizedLastName,
         email: sanitizedEmail,
-        message: sanitizedMessage,
+        suggestions: sanitizedSuggestions,
         timestamp: new Date().toISOString()
     };
     
@@ -38,12 +41,15 @@ document.getElementById('feedbackForm').addEventListener('submit', function(e) {
     
     // Reset form
     this.reset();
-    alert('Feedback submitted successfully!');
+    
+    // Show success message with data
+    const successMessage = `Feedback submitted successfully!\n\nName: ${feedback.firstName} ${feedback.lastName}\nEmail: ${feedback.email}\nSuggestions: ${feedback.suggestions || 'None'}\n\nTotal submissions: ${feedbacks.length}`;
+    alert(successMessage);
 });
 
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+function isValidGmail(email) {
+    const gmailRegex = /^[^\s@]+@gmail\.com$/i;
+    return gmailRegex.test(email);
 }
 
 function sanitizeInput(input) {
