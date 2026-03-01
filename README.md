@@ -43,7 +43,7 @@ This repository tracks my weekly learning and project development from Week 1 to
 
 | Week | Project | Status |
 |------|---------|--------|
-| [1](./week-1) | Data Science Portfolio | In Progress |
+| [1](./week-1) | Data Science Portfolio | completed ✅ |
 | [2](./week-2) | Interactive Feedback Form | Completed ✅ |
 | 3-12 | *Coming with tasks* | Pending |
 
