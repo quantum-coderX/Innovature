@@ -9,6 +9,25 @@
       "item": [
         {
           "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"User registered successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData).to.have.property('user_id');",
+                  "    console.log('New user added to database - ID:', jsonData.user_id);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -19,7 +38,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"testpass\"\n}"
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"Testpass1\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/auth/register",
@@ -60,7 +79,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"testpass\"\n}"
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"Testpass1\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/auth/login",
@@ -124,6 +143,26 @@
         },
         {
           "name": "Create Note",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Note created successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('title');",
+                  "    pm.expect(jsonData).to.have.property('content');",
+                  "    console.log('New note added to database - ID:', jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -226,12 +265,80 @@
           }
         }
       ]
+    },
+    {
+      "name": "Health & Database",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Notes (Check DB)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Database contains notes\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    console.log('Total notes in database: ' + jsonData.length);",
+                  "    if (jsonData.length > 0) {",
+                  "        console.log('Sample note:', jsonData[0]);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notes"
+              ]
+            },
+            "description": "Retrieve all notes for the authenticated user to check database content"
+          }
+        }
+      ]
     }
   ],
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:8000"
+      "value": "http://localhost:5000"
     },
     {
       "key": "token",

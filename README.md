@@ -35,7 +35,51 @@ This repository tracks my weekly learning and project development from Week 1 to
 	- Modern gradient backgrounds with smooth animations
 	- Input sanitization and data security
 
-**View:** [Week 2 Feedback Form](./week-2/index.html) | [View Submissions](./week-2/feedback.html)
+### [Week 3: Library Management System](./week-3/README.md)
+**Status:** Completed ✅
+
+- **Project:** Command-Line Library Management System
+- **Skills:** Python OOP, File I/O (CSV), Data Structures, CLI Development
+- **Highlights:**
+	- Complete library system with books, members, transactions
+	- Object-oriented design with classes for Book, Member, Transaction
+	- CSV-based data persistence
+	- CLI interface for all operations (add, search, borrow, return)
+	- Data validation and error handling
+	- Comprehensive reporting features
+
+**Run:** `python week-3/main.py`
+
+### [Week 4: Student Database System](./week-4/README.md)
+**Status:** Completed ✅
+
+- **Project:** Student Management with Database & Web Interface
+- **Skills:** Python, SQLite, SQLAlchemy, Flask, HTML/CSS, Database Design
+- **Highlights:**
+	- SQLite database with proper schema
+	- CRUD operations for students
+	- CLI interface for data management
+	- Web interface with Flask
+	- Data export functionality
+	- Clean separation of concerns
+
+**Run:** `python week-4/main.py` (CLI) or `python week-4/app.py` (Web)
+
+### [Week 5: User Notes API](./week-5/README.md)
+**Status:** Completed ✅
+
+- **Project:** RESTful Notes API with Authentication
+- **Skills:** Flask, JWT Authentication, PostgreSQL, Docker, API Design, Security
+- **Highlights:**
+	- JWT-based authentication system
+	- Full CRUD operations for personal notes
+	- PostgreSQL database with Docker setup
+	- Comprehensive error handling and logging
+	- Password security with hashing and validation
+	- Postman collection for testing
+	- Production-ready API with proper status codes
+
+**Run:** `docker-compose up -d` then `python week-5/main.py`
 
 ---
 
@@ -43,11 +87,14 @@ This repository tracks my weekly learning and project development from Week 1 to
 
 | Week | Project | Status |
 |------|---------|--------|
-| [1](./week-1) | Data Science Portfolio | completed ✅ |
+| [1](./week-1) | Data Science Portfolio | Completed ✅ |
 | [2](./week-2) | Interactive Feedback Form | Completed ✅ |
-| 3-12 | *Coming with tasks* | Pending |
+| [3](./week-3) | Library Management System | Completed ✅ |
+| [4](./week-4) | Student Database System | Completed ✅ |
+| [5](./week-5) | User Notes API | Completed ✅ |
+| 6-12 | *Coming with tasks* | Pending |
 
-**Note:** New week folders will be created as tasks are assigned.
+**Note:** Weeks 1-5 completed. New week folders will be created as tasks are assigned.
 
 ---
 
@@ -60,6 +107,10 @@ I'm a passionate **Data Scientist & Engineer** specializing in:
 - Apache Airflow & ETL
 - SQL & NoSQL Databases
 - Statistical Modeling & Pandas
+- **Web Development:** HTML, CSS, JavaScript, Flask, REST APIs
+- **Database Design:** SQLite, PostgreSQL, SQLAlchemy
+- **DevOps:** Docker, Containerization
+- **Security:** JWT, Password Hashing, Authentication
 
 **Education:** Computer Science Student at MITS
 **GitHub:** [quantum-coderX](https://github.com/quantum-coderX)
@@ -85,7 +136,31 @@ Innovature/
 │   └── js/
 │       ├── script.js    # Form validation & submission
 │       └── feedback.js  # Feedback display logic
-├── week-3/              # (Upcoming)
+├── week-3/              # Library Management System
+│   ├── main.py          # CLI application
+│   ├── library.py       # Library class
+│   ├── book.py          # Book class
+│   ├── member.py        # Member class
+│   ├── transaction.py   # Transaction class
+│   └── data/            # CSV data files
+├── week-4/              # Student Database System
+│   ├── main.py          # CLI application
+│   ├── student.py       # Student model
+│   ├── database.py      # Database setup
+│   ├── schema.sql       # Database schema
+│   ├── requirements.txt
+│   └── __pycache__/
+├── week-5/              # User Notes API
+│   ├── main.py          # Flask API
+│   ├── models.py        # Database models
+│   ├── auth.py          # Authentication
+│   ├── crud.py          # CRUD operations
+│   ├── config.py        # Configuration
+│   ├── requirements.txt
+│   ├── docker-compose.yml
+│   ├── notes_api.postman_collection.json
+│   └── README.md
+├── week-6/              # (Upcoming)
 ├── ...
 └── week-12/             # (Upcoming)
 ```
@@ -196,5 +271,5 @@ Adithyan Raj - [GitHub](https://github.com/quantum-coderX) | [LinkedIn](https://
 
 ---
 
-**Last Updated**: February 9, 2026
+**Last Updated**: March 1, 2026
 
