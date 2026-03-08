@@ -1,5 +1,4 @@
 import re
-import logging
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from database import db
@@ -31,15 +30,6 @@ def category_dict(cat):
 def tag_dict(tag):
     return {'id': tag.id, 'name': tag.name, 'created_at': tag.created_at.isoformat(), 'updated_at': tag.updated_at.isoformat()}
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('api.log'),
-        logging.StreamHandler()
-    ]
-)
-
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -48,11 +38,9 @@ jwt = JWTManager(app)
 
 with app.app_context():
     db.create_all()
-    logging.info("Database tables created/verified")
 
 @app.route('/')
 def health_check():
-    logging.info("Health check requested")
     return jsonify({'status': 'API is running', 'message': 'User Notes API with JWT auth'}), 200
 
 @app.route('/auth/register', methods=['POST'])
@@ -81,10 +69,8 @@ def register():
 
     try:
         user = create_user(username, password)
-        logging.info(f"User registered (ID: {user.id})")
         return jsonify({'user_id': user.id}), 201
-    except Exception as e:
-        logging.error(f"Registration failed: {str(e)}")
+    except Exception:
         return error('Registration failed', 500)
 
 @app.route('/auth/login', methods=['POST'])
@@ -98,16 +84,12 @@ def login():
     user = authenticate_user(username, password)
     if user:
         access_token = create_access_token(identity=str(user.id))
-        logging.info(f"User logged in (ID: {user.id})")
         return jsonify({'access_token': access_token}), 200
-    logging.warning("Failed login attempt")
     return error('Invalid credentials', 401)
 
 @app.route('/auth/logout', methods=['POST'])
 @jwt_required()
 def logout():
-    user = get_current_user()
-    logging.info(f"User logged out (ID: {user.id})")
     return '', 204
 
 # Category routes
@@ -116,8 +98,7 @@ def logout():
 def read_categories():
     try:
         return jsonify([category_dict(c) for c in get_categories()]), 200
-    except Exception as e:
-        logging.error(f"Failed to retrieve categories: {str(e)}")
+    except Exception:
         return error('Internal server error', 500)
 
 @app.route('/categories', methods=['POST'])
@@ -132,7 +113,6 @@ def create_user_category():
     try:
         return jsonify(category_dict(create_category(name))), 201
     except Exception as e:
-        logging.error(f"Failed to create category: {str(e)}")
         if 'unique constraint' in str(e).lower():
             return error('Conflict', 409)
         return error('Internal server error', 500)
@@ -162,7 +142,6 @@ def update_user_category(category_id):
             return error('Not found', 404)
         return jsonify(category_dict(cat)), 200
     except Exception as e:
-        logging.error(f"Failed to update category: {str(e)}")
         if 'unique constraint' in str(e).lower():
             return error('Conflict', 409)
         return error('Internal server error', 500)
@@ -174,8 +153,7 @@ def delete_user_category(category_id):
         if not delete_category(category_id):
             return error('Not found', 404)
         return '', 204
-    except Exception as e:
-        logging.error(f"Failed to delete category: {str(e)}")
+    except Exception:
         return error('Internal server error', 500)
 
 # Tag routes
@@ -184,8 +162,7 @@ def delete_user_category(category_id):
 def read_tags():
     try:
         return jsonify([tag_dict(t) for t in get_tags()]), 200
-    except Exception as e:
-        logging.error(f"Failed to retrieve tags: {str(e)}")
+    except Exception:
         return error('Internal server error', 500)
 
 @app.route('/tags', methods=['POST'])
@@ -200,7 +177,6 @@ def create_user_tag():
     try:
         return jsonify(tag_dict(create_tag(name))), 201
     except Exception as e:
-        logging.error(f"Failed to create tag: {str(e)}")
         if 'unique constraint' in str(e).lower():
             return error('Conflict', 409)
         return error('Internal server error', 500)
@@ -230,7 +206,6 @@ def update_user_tag(tag_id):
             return error('Not found', 404)
         return jsonify(tag_dict(t)), 200
     except Exception as e:
-        logging.error(f"Failed to update tag: {str(e)}")
         if 'unique constraint' in str(e).lower():
             return error('Conflict', 409)
         return error('Internal server error', 500)
@@ -242,8 +217,7 @@ def delete_user_tag(tag_id):
         if not delete_tag(tag_id):
             return error('Not found', 404)
         return '', 204
-    except Exception as e:
-        logging.error(f"Failed to delete tag: {str(e)}")
+    except Exception:
         return error('Internal server error', 500)
 
 @app.route('/notes', methods=['GET'])
@@ -256,8 +230,7 @@ def read_notes():
         search = request.args.get('search', '').strip()
         notes = get_notes(user.id, category_id=category_id, tag_id=tag_id, search=search)
         return jsonify([note_dict(n) for n in notes]), 200
-    except Exception as e:
-        logging.error(f"Failed to retrieve notes: {str(e)}")
+    except Exception:
         return error('Internal server error', 500)
 
 @app.route('/notes', methods=['POST'])
@@ -282,8 +255,7 @@ def create_user_note():
     try:
         note = create_note(title, content, user.id, category_id, tag_ids)
         return jsonify(note_dict(note)), 201
-    except Exception as e:
-        logging.error(f"Failed to create note: {str(e)}")
+    except Exception:
         return error('Internal server error', 500)
 
 @app.route('/notes/<int:note_id>', methods=['GET'])
@@ -323,8 +295,7 @@ def update_user_note(note_id):
         if not note:
             return error('Not found', 404)
         return jsonify(note_dict(note)), 200
-    except Exception as e:
-        logging.error(f"Failed to update note: {str(e)}")
+    except Exception:
         return error('Internal server error', 500)
 
 @app.route('/notes/<int:note_id>', methods=['DELETE'])
@@ -335,10 +306,8 @@ def delete_user_note(note_id):
         if not delete_note(note_id, user.id):
             return error('Not found', 404)
         return '', 204
-    except Exception as e:
-        logging.error(f"Failed to delete note: {str(e)}")
+    except Exception:
         return error('Internal server error', 500)
 
 if __name__ == '__main__':
-    logging.info("Starting User Notes API server")
     app.run(debug=True)

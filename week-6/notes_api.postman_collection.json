@@ -127,7 +127,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{access_token}}"
+                "value": "Bearer {{token}}"
               }
             ],
             "url": {
@@ -165,7 +165,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{access_token}}"
+                "value": "Bearer {{token}}"
               },
               {
                 "key": "Content-Type",
@@ -194,7 +194,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{access_token}}"
+                "value": "Bearer {{token}}"
               }
             ],
             "url": {
@@ -212,11 +212,11 @@
         {
           "name": "Update Category",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{access_token}}"
+                "value": "Bearer {{token}}"
               },
               {
                 "key": "Content-Type",
@@ -246,7 +246,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{access_token}}"
+                "value": "Bearer {{token}}"
               }
             ],
             "url": {
@@ -273,7 +273,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{access_token}}"
+                "value": "Bearer {{token}}"
               }
             ],
             "url": {
@@ -311,7 +311,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{access_token}}"
+                "value": "Bearer {{token}}"
               },
               {
                 "key": "Content-Type",
@@ -340,7 +340,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{access_token}}"
+                "value": "Bearer {{token}}"
               }
             ],
             "url": {
@@ -358,11 +358,11 @@
         {
           "name": "Update Tag",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{access_token}}"
+                "value": "Bearer {{token}}"
               },
               {
                 "key": "Content-Type",
@@ -392,7 +392,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{access_token}}"
+                "value": "Bearer {{token}}"
               }
             ],
             "url": {
@@ -423,7 +423,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/notes?category=1&tag=1&search=note",
+              "raw": "{{base_url}}/notes",
               "host": [
                 "{{base_url}}"
               ],
@@ -434,17 +434,20 @@
                 {
                   "key": "category",
                   "value": "1",
-                  "description": "Filter by category ID"
+                  "description": "Filter by category ID",
+                  "disabled": true
                 },
                 {
                   "key": "tag",
                   "value": "1",
-                  "description": "Filter by tag ID"
+                  "description": "Filter by tag ID",
+                  "disabled": true
                 },
                 {
                   "key": "search",
                   "value": "note",
-                  "description": "Search in title or content"
+                  "description": "Search in title or content",
+                  "disabled": true
                 }
               ]
             }
@@ -466,6 +469,7 @@
                   "    pm.expect(jsonData).to.have.property('id');",
                   "    pm.expect(jsonData).to.have.property('title');",
                   "    pm.expect(jsonData).to.have.property('content');",
+                  "    pm.collectionVariables.set('note_id', jsonData.id);",
                   "    console.log('New note added to database - ID:', jsonData.id);",
                   "});"
                 ]
@@ -486,7 +490,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"My Note\",\n  \"content\": \"This is my note content.\",\n  \"category_id\": 1,\n  \"tag_ids\": [1, 2]\n}"
+              "raw": "{\n  \"title\": \"My Note\",\n  \"content\": \"This is my note content.\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/notes",
@@ -500,31 +504,28 @@
           }
         },
         {
-          "name": "Get Note",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
+          "name": "Create Note with Category & Tag",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Note created successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.collectionVariables.set('note_id', jsonData.id);",
+                  "    console.log('New note added - ID:', jsonData.id);",
+                  "});"
+                ]
               }
-            ],
-            "url": {
-              "raw": "{{base_url}}/notes/1",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "notes",
-                "1"
-              ]
             }
-          }
-        },
-        {
-          "name": "Update Note",
+          ],
           "request": {
-            "method": "PUT",
+            "method": "POST",
             "header": [
               {
                 "key": "Authorization",
@@ -537,22 +538,117 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Updated Note\",\n  \"content\": \"Updated content.\",\n  \"category_id\": 2,\n  \"tag_ids\": [2]\n}"
+              "raw": "{\n  \"title\": \"Categorized Note\",\n  \"content\": \"Note with category and tags.\",\n  \"category_id\": 1,\n  \"tag_ids\": [1]\n}"
             },
             "url": {
-              "raw": "{{base_url}}/notes/1",
+              "raw": "{{base_url}}/notes",
+              "host": ["{{base_url}}"],
+              "path": ["notes"]
+            }
+          }
+        },
+        {
+          "name": "Get Note",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const noteId = pm.collectionVariables.get('note_id');",
+                  "if (!noteId) { throw new Error('note_id is not set. Run Create Note first.'); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notes/{{note_id}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "notes",
-                "1"
+                "{{note_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Note",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const noteId = pm.collectionVariables.get('note_id');",
+                  "if (!noteId) { throw new Error('note_id is not set. Run Create Note first.'); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Note\",\n  \"content\": \"Updated content.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/notes/{{note_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notes",
+                "{{note_id}}"
               ]
             }
           }
         },
         {
           "name": "Delete Note",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const noteId = pm.collectionVariables.get('note_id');",
+                  "if (!noteId) { throw new Error('note_id is not set. Run Create Note first.'); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 204) {",
+                  "    pm.collectionVariables.set('note_id', '');",
+                  "    console.log('note_id cleared after delete.');",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [
@@ -562,13 +658,13 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/notes/1",
+              "raw": "{{base_url}}/notes/{{note_id}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "notes",
-                "1"
+                "{{note_id}}"
               ]
             }
           }
@@ -652,6 +748,11 @@
     {
       "key": "token",
       "value": ""
+    },
+    {
+      "key": "note_id",
+      "value": ""
     }
   ]
 }
+
