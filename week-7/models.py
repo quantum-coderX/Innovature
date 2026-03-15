@@ -35,3 +35,19 @@ class Note(db.Model):
     user = db.relationship('User', backref=db.backref('notes', lazy=True))
     category = db.relationship('Category', backref=db.backref('notes', lazy=True))
     tags = db.relationship('Tag', secondary=note_tags, backref=db.backref('notes', lazy=True))
+
+
+class ShareLink(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    note_id = db.Column(db.Integer, db.ForeignKey('note.id'), nullable=False, index=True)
+    token = db.Column(db.String(128), unique=True, nullable=False, index=True)
+    expires_at = db.Column(db.DateTime, nullable=True)
+    access_count = db.Column(db.Integer, nullable=False, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    last_accessed_at = db.Column(db.DateTime, nullable=True)
+    is_revoked = db.Column(db.Boolean, nullable=False, default=False)
+
+    note = db.relationship(
+        'Note',
+        backref=db.backref('share_links', lazy=True, cascade='all, delete-orphan')
+    )
