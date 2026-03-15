@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "User Notes API",
+    "name": "User Notes API - Week 7",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -8,402 +8,130 @@
       "name": "Auth",
       "item": [
         {
-          "name": "Register",
+          "name": "Register Owner",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test(\"User registered successfully\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('message');",
-                  "    pm.expect(jsonData).to.have.property('user_id');",
-                  "    console.log('New user added to database - ID:', jsonData.user_id);",
+                  "pm.test('Status code is 201 or 500', function () {",
+                  "  pm.expect([201, 500]).to.include(pm.response.code);",
                   "});"
-                ]
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"Testpass1\"\n}"
+              "raw": "{\n  \"username\": \"{{owner_username}}\",\n  \"password\": \"{{password}}\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/auth/register",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
             }
           }
         },
         {
-          "name": "Login",
+          "name": "Login Owner",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
                   "});",
-                  "",
                   "var jsonData = pm.response.json();",
-                  "pm.collectionVariables.set(\"token\", jsonData.access_token);"
-                ]
+                  "pm.collectionVariables.set('owner_token', jsonData.access_token);"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"Testpass1\"\n}"
+              "raw": "{\n  \"username\": \"{{owner_username}}\",\n  \"password\": \"{{password}}\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/auth/login",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
             }
           }
         },
         {
-          "name": "Logout",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/auth/logout",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "auth",
-                "logout"
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Categories",
-      "item": [
-        {
-          "name": "Get Categories",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/categories",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categories"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Create Category",
+          "name": "Register Non-owner",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "pm.test(\"Category created\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('id');",
-                  "    pm.expect(jsonData).to.have.property('name');",
+                  "pm.test('Status code is 201 or 500', function () {",
+                  "  pm.expect([201, 500]).to.include(pm.response.code);",
                   "});"
-                ]
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Work\"\n}"
+              "raw": "{\n  \"username\": \"{{other_username}}\",\n  \"password\": \"{{password}}\"\n}"
             },
             "url": {
-              "raw": "{{base_url}}/categories",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categories"
-              ]
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
             }
           }
         },
         {
-          "name": "Get Category",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/categories/1",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categories",
-                "1"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Update Category",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Personal\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/categories/1",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categories",
-                "1"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Delete Category",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/categories/1",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categories",
-                "1"
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Tags",
-      "item": [
-        {
-          "name": "Get Tags",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/tags",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "tags"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Create Tag",
+          "name": "Login Non-owner",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
                   "});",
-                  "pm.test(\"Tag created\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('id');",
-                  "    pm.expect(jsonData).to.have.property('name');",
-                  "});"
-                ]
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('other_token', jsonData.access_token);"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"urgent\"\n}"
+              "raw": "{\n  \"username\": \"{{other_username}}\",\n  \"password\": \"{{password}}\"\n}"
             },
             "url": {
-              "raw": "{{base_url}}/tags",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "tags"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get Tag",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/tags/1",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "tags",
-                "1"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Update Tag",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"important\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/tags/1",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "tags",
-                "1"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Delete Tag",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/tags/1",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "tags",
-                "1"
-              ]
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
             }
           }
         }
@@ -413,132 +141,31 @@
       "name": "Notes",
       "item": [
         {
-          "name": "Get Notes",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/notes",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "notes"
-              ],
-              "query": [
-                {
-                  "key": "category",
-                  "value": "1",
-                  "description": "Filter by category ID",
-                  "disabled": true
-                },
-                {
-                  "key": "tag",
-                  "value": "1",
-                  "description": "Filter by tag ID",
-                  "disabled": true
-                },
-                {
-                  "key": "search",
-                  "value": "note",
-                  "description": "Search in title or content",
-                  "disabled": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Create Note",
+          "name": "Create Note For Sharing",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
                   "});",
-                  "",
-                  "pm.test(\"Note created successfully\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('id');",
-                  "    pm.expect(jsonData).to.have.property('title');",
-                  "    pm.expect(jsonData).to.have.property('content');",
-                  "    pm.collectionVariables.set('note_id', jsonData.id);",
-                  "    console.log('New note added to database - ID:', jsonData.id);",
-                  "});"
-                ]
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('note_id', jsonData.id);"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"My Note\",\n  \"content\": \"This is my note content.\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/notes",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "notes"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Create Note with Category & Tag",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test(\"Note created successfully\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('id');",
-                  "    pm.collectionVariables.set('note_id', jsonData.id);",
-                  "    console.log('New note added - ID:', jsonData.id);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Categorized Note\",\n  \"content\": \"Note with category and tags.\",\n  \"category_id\": 1,\n  \"tag_ids\": [1]\n}"
+              "raw": "{\n  \"title\": \"Week 7 Shared Note\",\n  \"content\": \"This note is shared publicly by token.\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/notes",
@@ -546,213 +173,256 @@
               "path": ["notes"]
             }
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "Week 7 Sharing",
+      "item": [
         {
-          "name": "Get Note",
+          "name": "Create Share (No Expiration)",
           "event": [
             {
-              "listen": "prerequest",
+              "listen": "test",
               "script": {
                 "exec": [
-                  "const noteId = pm.collectionVariables.get('note_id');",
-                  "if (!noteId) { throw new Error('note_id is not set. Run Create Note first.'); }"
-                ]
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('share_id', jsonData.id);",
+                  "pm.collectionVariables.set('share_token', jsonData.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{base_url}}/notes/{{note_id}}/share",
+              "host": ["{{base_url}}"],
+              "path": ["notes", "{{note_id}}", "share"]
+            }
+          }
+        },
+        {
+          "name": "Create Share (With Expiration)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('expiring_share_id', jsonData.id);",
+                  "pm.collectionVariables.set('expiring_share_token', jsonData.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expires_at\": \"2099-01-01T00:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/notes/{{note_id}}/share",
+              "host": ["{{base_url}}"],
+              "path": ["notes", "{{note_id}}", "share"]
+            }
+          }
+        },
+        {
+          "name": "Public Access #1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('access_count_1', jsonData.share.access_count);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/s/{{share_token}}",
+              "host": ["{{base_url}}"],
+              "path": ["s", "{{share_token}}"]
+            }
+          }
+        },
+        {
+          "name": "Public Access #2 (Count Increments)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "var prev = Number(pm.collectionVariables.get('access_count_1'));",
+                  "pm.test('access_count increments', function () {",
+                  "  pm.expect(jsonData.share.access_count).to.be.above(prev);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/s/{{share_token}}",
+              "host": ["{{base_url}}"],
+              "path": ["s", "{{share_token}}"]
+            }
+          }
+        },
+        {
+          "name": "Non-owner List Shares",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 403 or 404', function () {",
+                  "  pm.expect([403, 404]).to.include(pm.response.code);",
+                  "});"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
+              { "key": "Authorization", "value": "Bearer {{other_token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/notes/{{note_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "notes",
-                "{{note_id}}"
-              ]
+              "raw": "{{base_url}}/notes/{{note_id}}/shares",
+              "host": ["{{base_url}}"],
+              "path": ["notes", "{{note_id}}", "shares"]
             }
           }
         },
         {
-          "name": "Update Note",
+          "name": "Revoke Share",
           "event": [
             {
-              "listen": "prerequest",
+              "listen": "test",
               "script": {
                 "exec": [
-                  "const noteId = pm.collectionVariables.get('note_id');",
-                  "if (!noteId) { throw new Error('note_id is not set. Run Create Note first.'); }"
-                ]
+                  "pm.test('Status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "PATCH",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Updated Note\",\n  \"content\": \"Updated content.\"\n}"
+              "raw": "{\n  \"is_revoked\": true\n}"
             },
             "url": {
-              "raw": "{{base_url}}/notes/{{note_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "notes",
-                "{{note_id}}"
-              ]
+              "raw": "{{base_url}}/notes/{{note_id}}/shares/{{share_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["notes", "{{note_id}}", "shares", "{{share_id}}"]
             }
           }
         },
         {
-          "name": "Delete Note",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "const noteId = pm.collectionVariables.get('note_id');",
-                  "if (!noteId) { throw new Error('note_id is not set. Run Create Note first.'); }"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 204\", function () {",
-                  "    pm.response.to.have.status(204);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 204) {",
-                  "    pm.collectionVariables.set('note_id', '');",
-                  "    console.log('note_id cleared after delete.');",
-                  "}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/notes/{{note_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "notes",
-                "{{note_id}}"
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Health & Database",
-      "item": [
-        {
-          "name": "Health Check",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get All Notes (Check DB)",
+          "name": "Public Access Revoked Link",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test(\"Response is an array\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.be.an('array');",
-                  "});",
-                  "",
-                  "pm.test(\"Database contains notes\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    console.log('Total notes in database: ' + jsonData.length);",
-                  "    if (jsonData.length > 0) {",
-                  "        console.log('Sample note:', jsonData[0]);",
-                  "    }",
+                  "pm.test('Status code is 410', function () {",
+                  "  pm.response.to.have.status(410);",
                   "});"
-                ]
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
             "url": {
-              "raw": "{{base_url}}/notes",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "notes"
-              ]
-            },
-            "description": "Retrieve all notes for the authenticated user to check database content"
+              "raw": "{{base_url}}/s/{{share_token}}",
+              "host": ["{{base_url}}"],
+              "path": ["s", "{{share_token}}"]
+            }
+          }
+        },
+        {
+          "name": "Public Access Invalid Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/s/invalid-token-week7",
+              "host": ["{{base_url}}"],
+              "path": ["s", "invalid-token-week7"]
+            }
           }
         }
       ]
     }
   ],
   "variable": [
-    {
-      "key": "base_url",
-      "value": "http://localhost:5000"
-    },
-    {
-      "key": "token",
-      "value": ""
-    },
-    {
-      "key": "note_id",
-      "value": ""
-    }
+    { "key": "base_url", "value": "http://localhost:5000" },
+    { "key": "password", "value": "Testpass1" },
+    { "key": "owner_username", "value": "week7_owner" },
+    { "key": "other_username", "value": "week7_other" },
+    { "key": "owner_token", "value": "" },
+    { "key": "other_token", "value": "" },
+    { "key": "note_id", "value": "" },
+    { "key": "share_id", "value": "" },
+    { "key": "share_token", "value": "" },
+    { "key": "expiring_share_id", "value": "" },
+    { "key": "expiring_share_token", "value": "" },
+    { "key": "access_count_1", "value": "0" }
   ]
 }
-

@@ -21,19 +21,21 @@
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 680px;
+            width: 92%;
         }
         h1 {
             color: #333;
             margin-bottom: 2rem;
         }
         .nav-links {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.8rem;
         }
         .nav-links a {
             display: inline-block;
-            padding: 1rem 2rem;
+            padding: 0.9rem 1rem;
             background-color: #007bff;
             color: white;
             text-decoration: none;
@@ -51,6 +53,12 @@
         <div class="nav-links">
             <a href="week-1/index.html">Week 1 - Portfolio</a>
             <a href="week-2/index.html">Week 2 - Feedback Form</a>
+            <a href="week-3/README.md">Week 3 - Library Management</a>
+            <a href="week-4/README.md">Week 4 - Student Database</a>
+            <a href="week-5/README.md">Week 5 - Notes API</a>
+            <a href="week-6/README.md">Week 6 - ORM and Relationships</a>
+            <a href="week-7/README.md">Week 7 - Routing and Serializers</a>
+            <a href="README.md">Project Overview</a>
         </div>
     </div>
 </body>

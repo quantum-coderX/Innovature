@@ -14,6 +14,36 @@ Add public sharing of notes via unique URL with optional expiration date.
 - Track link access count.
 - Deliverables: API endpoints + Postman tests.
 
+## Implementation Status
+- Step 1 (Week Setup): Completed
+- Step 2 (Routing Design): Completed
+- Step 3 (Data Model Changes): Completed
+- Step 4 (Unique Share Link Generation): Completed
+- Step 5 (Serializer Layer): Completed
+- Step 6 (Request/Response Handling): Completed
+- Step 7 (Share Endpoints): Completed
+- Step 8 (Access Count Tracking): Completed
+- Step 9 (CRUD/Service Logic): Completed
+- Step 10 (Postman Deliverables): Completed
+- Step 11 (File Responsibilities): Completed
+
+## Current Endpoints (Week 7)
+- `POST /notes/<note_id>/share`
+- `GET /notes/<note_id>/shares`
+- `PATCH /notes/<note_id>/shares/<share_id>`
+- `DELETE /notes/<note_id>/shares/<share_id>`
+- `GET /s/<token>`
+
+## Run and Test
+1. Set database URL (PowerShell):
+  - `$env:DATABASE_URL = "postgresql+pg8000://user:password@localhost:5432/notes_db"`
+2. Start API:
+  - `python main.py`
+3. Run automated tests:
+  - `python test_api.py`
+4. Run Postman collection:
+  - `notes_api.postman_collection.json`
+
 ## Implementation Strategy
 
 ### 1. Week Setup
@@ -105,11 +135,15 @@ Add public sharing of notes via unique URL with optional expiration date.
 
 ### 11. Suggested File Responsibilities
 - `models.py`: `ShareLink` model and relationships.
-- `crud.py`: share-link data operations.
-- `serializers.py`: all payload serializers/parsers.
-- `main.py`: route registration and request/response wiring.
-- `test_api.py`: automated API test script updates.
-- `notes_api.postman_collection.json`: final deliverable tests.
+- `crud.py`: share-link data operations, token resolution, and access counting.
+- `serializers.py`: all payload serializers/parsers and response helpers.
+- `main.py`: app setup and blueprint registration.
+- `routes/auth_routes.py`: auth endpoints.
+- `routes/note_routes.py`: note/category/tag endpoints.
+- `routes/share_routes.py`: owner-only share management endpoints.
+- `routes/public_routes.py`: public token endpoint (`GET /s/<token>`).
+- `test_api.py`: automated Week 7 API tests (including counter and expiry/revoke checks).
+- `notes_api.postman_collection.json`: Postman test flows for Week 7 sharing requirements.
 
 ## Definition of Done
 - All sharing endpoints implemented and reachable.

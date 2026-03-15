@@ -1,13 +1,13 @@
 from database import db
 from datetime import datetime
 
-# Association table for many-to-many relationship between Note and Tag
+
 note_tags = db.Table('note_tags',
     db.Column('note_id', db.Integer, db.ForeignKey('note.id'), primary_key=True),
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'), primary_key=True)
 )
 
-# Database Models
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
