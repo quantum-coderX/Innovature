@@ -1,5 +1,8 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from flask import jsonify, url_for
+
+
+DEFAULT_SHARE_EXPIRY_DAYS = 7
 
 
 def error_response(message, status_code):
@@ -77,10 +80,10 @@ def _parse_iso_to_utc_naive(value):
 
 def parse_share_create_payload(data):
     data = data or {}
-    expires_at = None
+    expires_at = datetime.utcnow() + timedelta(days=DEFAULT_SHARE_EXPIRY_DAYS)
     if 'expires_at' in data:
         if data['expires_at'] is None:
-            expires_at = None
+            expires_at = datetime.utcnow() + timedelta(days=DEFAULT_SHARE_EXPIRY_DAYS)
         else:
             try:
                 expires_at = _parse_iso_to_utc_naive(data['expires_at'])

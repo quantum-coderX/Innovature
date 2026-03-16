@@ -215,6 +215,16 @@
           "name": "Create Share (With Expiration)",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var expiry = new Date(Date.now() + 15 * 60 * 1000).toISOString();",
+                  "pm.collectionVariables.set('future_expires_at', expiry);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "exec": [
@@ -237,7 +247,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"expires_at\": \"2099-01-01T00:00:00Z\"\n}"
+              "raw": "{\n  \"expires_at\": \"{{future_expires_at}}\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/notes/{{note_id}}/share",
@@ -385,6 +395,84 @@
           }
         },
         {
+          "name": "Create Share (Short Expiration)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var shortExpiry = new Date(Date.now() + 5 * 1000).toISOString();",
+                  "pm.collectionVariables.set('short_expires_at', shortExpiry);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('short_expiring_share_token', jsonData.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{owner_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expires_at\": \"{{short_expires_at}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/notes/{{note_id}}/share",
+              "host": ["{{base_url}}"],
+              "path": ["notes", "{{note_id}}", "share"]
+            }
+          }
+        },
+        {
+          "name": "Public Access Expired Link (After Delay)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var start = Date.now();",
+                  "while (Date.now() - start < 6000) {}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 410', function () {",
+                  "  pm.response.to.have.status(410);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/s/{{short_expiring_share_token}}",
+              "host": ["{{base_url}}"],
+              "path": ["s", "{{short_expiring_share_token}}"]
+            }
+          }
+        },
+        {
           "name": "Public Access Invalid Token",
           "event": [
             {
@@ -423,6 +511,9 @@
     { "key": "share_token", "value": "" },
     { "key": "expiring_share_id", "value": "" },
     { "key": "expiring_share_token", "value": "" },
+    { "key": "future_expires_at", "value": "" },
+    { "key": "short_expires_at", "value": "" },
+    { "key": "short_expiring_share_token", "value": "" },
     { "key": "access_count_1", "value": "0" }
   ]
 }
