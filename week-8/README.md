@@ -162,10 +162,19 @@ Role(
 ### 1. User Registration
 ```
 POST /api/auth/register
-├── Input: username, email, password, role (optional)
+├── Input: username, email, password
 ├── Hash password using PBKDF2-SHA256
-├── Create user record in database
+├── Public signup always creates role=user
 └── Response: User details with ID
+```
+
+### 1.1 Admin Bootstrap (One-Time)
+```
+POST /api/auth/bootstrap/admin
+├── Header: X-ADMIN-BOOTSTRAP-KEY
+├── Input: username, email, password
+├── Creates first admin account only
+└── Response: Admin details with ID
 ```
 
 ### 2. User Login
@@ -208,7 +217,9 @@ POST /api/auth/resend-otp
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|----------------|
 | POST | `/api/auth/register` | Register new user | No |
+| POST | `/api/auth/bootstrap/admin` | Bootstrap first admin (one-time) | No |
 | POST | `/api/auth/login` | Login and get OTP | No |
+| POST | `/api/auth/admin/login` | Admin login and get OTP | No |
 | POST | `/api/auth/verify-otp` | Verify OTP and get token | No |
 | POST | `/api/auth/resend-otp` | Resend OTP to email | No |
 
@@ -230,6 +241,21 @@ POST /api/auth/resend-otp
 
 ## 📝 Usage Examples
 
+### 0. What To Do First (Postman + Bootstrap Admin)
+
+1. Set environment variables and restart app:
+  - `ENABLE_ADMIN_BOOTSTRAP=True`
+  - `ADMIN_BOOTSTRAP_KEY=change-me-bootstrap-key`
+2. Re-import the latest Postman collection: `api.postman_collection.json`.
+3. Set collection variable `admin_bootstrap_key` to the same value as `ADMIN_BOOTSTRAP_KEY`.
+4. Run requests in order:
+  - `Health Check`
+  - `Bootstrap Admin (One-Time)`
+  - `Admin Login (Send OTP)`
+  - `Verify OTP`
+5. Use `admin_token` for admin routes.
+6. After first admin is created, set `ENABLE_ADMIN_BOOTSTRAP=False` and restart app.
+
 ### 1. Register a New User
 
 ```bash
@@ -238,8 +264,7 @@ curl -X POST http://localhost:5000/api/auth/register \
   -d '{
     "username": "john_doe",
     "email": "john@example.com",
-    "password": "SecurePassword123",
-    "role": "user"
+    "password": "SecurePassword123"
   }'
 ```
 
@@ -255,6 +280,31 @@ curl -X POST http://localhost:5000/api/auth/register \
   }
 }
 ```
+
+### 1.1 Bootstrap an Admin (One-Time)
+
+Use these local/dev credentials for quick testing:
+
+- Username: `admin_test`
+- Email: `admin@test.com`
+- Password: `Admin@12345`
+- Header `X-ADMIN-BOOTSTRAP-KEY`: `change-me-bootstrap-key`
+
+```bash
+curl -X POST http://localhost:5000/api/auth/bootstrap/admin \
+  -H "Content-Type: application/json" \
+  -H "X-ADMIN-BOOTSTRAP-KEY: change-me-bootstrap-key" \
+  -d '{
+    "username": "admin_test",
+    "email": "admin@test.com",
+    "password": "Admin@12345"
+  }'
+```
+
+If this returns:
+- `401`: `X-ADMIN-BOOTSTRAP-KEY` does not match `ADMIN_BOOTSTRAP_KEY`
+- `403`: `ENABLE_ADMIN_BOOTSTRAP` is disabled
+- `409`: an admin already exists (expected after first success)
 
 ### 2. Login and Request OTP
 
@@ -420,6 +470,10 @@ MAIL_USERNAME=your-email@gmail.com
 MAIL_PASSWORD=your-app-password
 MAIL_DEFAULT_SENDER=noreply@2faauth.app
 
+# Admin Bootstrap (one-time use)
+ENABLE_ADMIN_BOOTSTRAP=True
+ADMIN_BOOTSTRAP_KEY=change-me-bootstrap-key
+
 # Flask
 FLASK_ENV=development
 FLASK_APP=main.py
@@ -536,6 +590,7 @@ failed_attempts = LoginAttempt.query.filter_by(success=False).all()
 8. Set up database backups
 9. Use environment variables via `.env` file
 10. Enable logging and monitoring
+11. Disable `ENABLE_ADMIN_BOOTSTRAP` after first admin is created
 
 ### Docker Deployment
 

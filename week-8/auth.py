@@ -1,16 +1,28 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from flask_mail import Mail, Message
+from email_validator import validate_email, EmailNotValidError
 from functools import wraps
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import random
 import string
 from database import db
-from models import User, OTP, LoginAttempt
+from models import User, OTP, LoginAttempt, utc_now, ensure_aware
 from config import Config
 
 # Initialize Mail
 mail = Mail()
+
+# ==================== Email Validation ====================
+
+def validate_email_format(email):
+    """Validate email format using email-validator library"""
+    try:
+        # Normalize and validate the email
+        valid = validate_email(email, check_deliverability=False)
+        return True, valid.email
+    except EmailNotValidError as e:
+        return False, str(e)
 
 # ==================== Password Management ====================
 
@@ -26,6 +38,14 @@ def check_password(password, hashed):
 
 def create_user(username, email, password, role='user'):
     """Create a new user with hashed password"""
+    # Validate email format first
+    is_valid, result = validate_email_format(email)
+    if not is_valid:
+        return None, f"Invalid email format: {result}"
+    
+    # Use the normalized email
+    email = result
+    
     if User.query.filter_by(username=username).first():
         return None, "Username already exists"
     
@@ -54,7 +74,7 @@ def get_user_by_email(email):
 
 def get_user_by_id(user_id):
     """Retrieve user by ID"""
-    return User.query.get(user_id)
+    return db.session.get(User, user_id)
 
 # ==================== OTP Generation & Verification ====================
 
@@ -64,14 +84,13 @@ def generate_otp(length=6):
 
 def create_otp_for_user(user_id, expiry_minutes=5):
     """Create and save OTP for user"""
-    # Delete any existing unverified OTPs
     OTP.query.filter_by(user_id=user_id, is_verified=False).delete()
     
     otp_code = generate_otp(Config.OTP_LENGTH)
     otp = OTP(
         user_id=user_id,
         otp_code=otp_code,
-        expires_at=datetime.utcnow() + timedelta(minutes=expiry_minutes)
+        expires_at=utc_now() + timedelta(minutes=expiry_minutes)
     )
     db.session.add(otp)
     db.session.commit()
@@ -129,8 +148,9 @@ def verify_otp(user_id, otp_code, max_attempts=3):
     
     # OTP is valid
     otp.is_verified = True
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     user.two_fa_verified = True
+    user.is_email_verified = True
     db.session.commit()
     
     return True, "OTP verified successfully"
@@ -150,7 +170,8 @@ def authenticate_user(username, password):
     
     # Check if account is locked
     if user.is_account_locked():
-        remaining_time = (user.locked_until - datetime.utcnow()).total_seconds() / 60
+        locked_until = ensure_aware(user.locked_until)
+        remaining_time = (locked_until - utc_now()).total_seconds() / 60
         return None, f"Account locked. Try again in {int(remaining_time)} minutes."
     
     # Check password
@@ -188,7 +209,7 @@ def log_login_attempt(user_id, success=True, reason=None, ip_address=None):
 
 def create_jwt_token(user_id):
     """Create JWT access token"""
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if not user:
         return None
     
@@ -199,7 +220,7 @@ def create_jwt_token(user_id):
     }
     
     access_token = create_access_token(
-        identity=user_id,
+        identity=str(user_id),  # Convert to string for JWT compatibility
         additional_claims=additional_claims
     )
     
@@ -208,7 +229,7 @@ def create_jwt_token(user_id):
 def get_current_user():
     """Get current authenticated user from JWT token"""
     user_id = get_jwt_identity()
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 # ==================== Role-Based Access Control (RBAC) ====================
 
@@ -280,14 +301,14 @@ def require_2fa_and_role(*roles):
 
 def update_last_login(user_id):
     """Update user's last login timestamp"""
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if user:
-        user.last_login = datetime.utcnow()
+        user.last_login = utc_now()
         db.session.commit()
 
 def verify_user_email(user_id):
     """Mark user email as verified"""
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if user:
         user.is_email_verified = True
         db.session.commit()

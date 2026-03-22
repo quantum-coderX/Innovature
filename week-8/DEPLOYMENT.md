@@ -22,6 +22,9 @@ This guide covers deploying the 2FA Authentication system to production environm
 - [ ] HTTPS enforced
 - [ ] CORS properly configured
 - [ ] Database backups configured
+- [ ] ENABLE_ADMIN_BOOTSTRAP enabled only for first admin creation
+- [ ] ENABLE_ADMIN_BOOTSTRAP disabled after bootstrap completes
+- [ ] ADMIN_BOOTSTRAP_KEY rotated or removed after bootstrap
 
 ### Environment Variables
 - [ ] Database connection string updated

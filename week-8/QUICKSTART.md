@@ -27,6 +27,8 @@ cp .env.example .env
 MAIL_USERNAME=your-email@gmail.com
 MAIL_PASSWORD=<16-char app password from step 5>
 JWT_SECRET_KEY=<generate with: python -c "import secrets; print(secrets.token_urlsafe(32))">
+ENABLE_ADMIN_BOOTSTRAP=True
+ADMIN_BOOTSTRAP_KEY=change-me-bootstrap-key
 ```
 
 ### Step 4: Run Application
@@ -41,6 +43,24 @@ Server will start at: **http://localhost:5000**
 
 ## 📋 Quick API Tests
 
+### 0. Postman Prep (for Admin Flow)
+
+1. Re-import `api.postman_collection.json` to get latest requests.
+2. In collection variables, set:
+  - `admin_bootstrap_key=change-me-bootstrap-key`
+  - `admin_username=admin_test`
+  - `admin_email=admin@test.com`
+  - `admin_password=Admin@12345`
+3. Run in this order:
+  - `Health Check`
+  - `Bootstrap Admin (One-Time)`
+  - `Admin Login (Send OTP)`
+  - `Verify OTP`
+
+4. After bootstrap succeeds once, disable it:
+  - set `ENABLE_ADMIN_BOOTSTRAP=False`
+  - restart the app
+
 ### 1. Health Check
 ```bash
 curl http://localhost:5000/
@@ -54,6 +74,18 @@ curl -X POST http://localhost:5000/api/auth/register \
     "username": "testuser",
     "email": "your-email@gmail.com",
     "password": "TestPassword123"
+  }'
+```
+
+### 2.1 Bootstrap First Admin (One-Time)
+```bash
+curl -X POST http://localhost:5000/api/auth/bootstrap/admin \
+  -H "Content-Type: application/json" \
+  -H "X-ADMIN-BOOTSTRAP-KEY: change-me-bootstrap-key" \
+  -d '{
+    "username": "admin_test",
+    "email": "admin@test.com",
+    "password": "Admin@12345"
   }'
 ```
 
@@ -163,6 +195,13 @@ pip install -r requirements.txt
 2. Is `MAIL_PASSWORD` correct? (16-char app password, not regular password)
 3. Check spam folder
 4. Try resend: `POST /api/auth/resend-otp`
+
+### Issue: "Bootstrap Admin not working"
+**Check:**
+1. `ENABLE_ADMIN_BOOTSTRAP=True` in `.env`
+2. `ADMIN_BOOTSTRAP_KEY` matches Postman `admin_bootstrap_key`
+3. App restarted after `.env` changes
+4. If response is `409`, first admin already exists
 
 ### Issue: "SMTP error - Connection refused"
 **Check:**

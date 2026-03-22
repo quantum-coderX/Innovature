@@ -33,12 +33,61 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"TestPassword123\",\n  \"role\": \"user\"\n}"
+              "raw": "{\n  \"username\": \"{{test_username}}\",\n  \"email\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/auth/register",
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "register"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Register status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var data = pm.response.json();",
+                  "if (data && data.user && data.user.username) {",
+                  "    pm.collectionVariables.set('test_username', data.user.username);",
+                  "}",
+                  "if (data && data.user && data.user.email) {",
+                  "    pm.collectionVariables.set('test_email', data.user.email);",
+                  "}",
+                  "if (data && data.user && data.user.id) {",
+                  "    pm.collectionVariables.set('user_id', data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bootstrap Admin (One-Time)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-ADMIN-BOOTSTRAP-KEY",
+                "value": "{{admin_bootstrap_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{admin_username}}\",\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/bootstrap/admin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "bootstrap", "admin"]
             }
           }
         },
@@ -54,14 +103,71 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"TestPassword123\"\n}"
+              "raw": "{\n  \"username\": \"{{test_username}}\",\n  \"password\": \"{{test_password}}\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/auth/login",
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "login"]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var data = pm.response.json();",
+                  "if (data && data.user_id) {",
+                  "    pm.collectionVariables.set('user_id', data.user_id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin Login (Send OTP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{admin_username}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/admin/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "admin", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Admin login status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var data = pm.response.json();",
+                  "if (data && data.user_id) {",
+                  "    pm.collectionVariables.set('user_id', data.user_id);",
+                  "}"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Verify OTP",
@@ -75,14 +181,33 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": 1,\n  \"otp_code\": \"123456\"\n}"
+              "raw": "{\n  \"user_id\": {{user_id}},\n  \"otp_code\": \"{{otp_code}}\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/auth/verify-otp",
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "verify-otp"]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Verify OTP status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var data = pm.response.json();",
+                  "if (data && data.access_token) {",
+                  "    pm.collectionVariables.set('access_token', data.access_token);",
+                  "    pm.collectionVariables.set('admin_token', data.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Resend OTP",
@@ -96,7 +221,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": 1\n}"
+              "raw": "{\n  \"user_id\": {{user_id}}\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/auth/resend-otp",
@@ -293,8 +418,91 @@
     },
     {
       "key": "admin_token",
-      "value": "your_admin_token_here",
+      "value": "",
       "type": "string"
+    },
+    {
+      "key": "test_username",
+      "value": "user{{$timestamp}}",
+      "type": "string",
+      "description": "Use a unique username for each run"
+    },
+    {
+      "key": "test_email",
+      "value": "adithyanrajkala+{{$timestamp}}@gmail.com",
+      "type": "string",
+      "description": "Use your inbox so OTP mail arrives"
+    },
+    {
+      "key": "test_password",
+      "value": "TestPassword123",
+      "type": "string"
+    },
+    {
+      "key": "admin_username",
+      "value": "admin_test",
+      "type": "string",
+      "description": "Username for dedicated admin login flow"
+    },
+    {
+      "key": "admin_email",
+      "value": "admin@test.com",
+      "type": "string",
+      "description": "Email used when bootstrapping admin"
+    },
+    {
+      "key": "admin_password",
+      "value": "Admin@12345",
+      "type": "string",
+      "description": "Password for dedicated admin login flow"
+    },
+    {
+      "key": "admin_bootstrap_key",
+      "value": "change-me-bootstrap-key",
+      "type": "string",
+      "description": "Must match ENABLE_ADMIN_BOOTSTRAP and ADMIN_BOOTSTRAP_KEY server settings"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string",
+      "description": "Auto-filled from register/login"
+    },
+    {
+      "key": "otp_code",
+      "value": "",
+      "type": "string",
+      "description": "Paste OTP from email before Verify OTP"
+    },
+    {
+      "key": "mail_server",
+      "value": "smtp.gmail.com",
+      "type": "string",
+      "description": "Email server address (e.g., smtp.gmail.com)"
+    },
+    {
+      "key": "mail_port",
+      "value": "587",
+      "type": "string",
+      "description": "Email server port (e.g., 587 for Gmail TLS)"
+    },
+    {
+      "key": "mail_username",
+      "value": "your-email@gmail.com",
+      "type": "string",
+      "description": "Email account username/address"
+    },
+    {
+      "key": "mail_password",
+      "value": "your-app-password",
+      "type": "string",
+      "description": "Email account password or app-specific password"
+    },
+    {
+      "key": "mail_sender",
+      "value": "noreply@2faauth.app",
+      "type": "string",
+      "description": "Sender email address for OTP emails"
     }
   ]
 }

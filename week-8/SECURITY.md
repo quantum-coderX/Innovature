@@ -6,6 +6,26 @@ This document details the security architecture and best practices implemented i
 
 ---
 
+## 👑 Admin Bootstrap Security Model
+
+### Why This Exists
+- Public registration is intentionally restricted to `role=user`.
+- Admin creation is separated into a one-time bootstrap endpoint.
+
+### Controls Implemented
+- `POST /api/auth/bootstrap/admin` requires header `X-ADMIN-BOOTSTRAP-KEY`.
+- Bootstrap only works when `ENABLE_ADMIN_BOOTSTRAP=True`.
+- Bootstrap only creates the first admin account.
+- Further bootstrap attempts return `409` once an admin exists.
+
+### Operational Best Practice
+1. Enable bootstrap only during initial setup.
+2. Create first admin.
+3. Disable bootstrap immediately.
+4. Keep `ADMIN_BOOTSTRAP_KEY` secret and rotate if exposed.
+
+---
+
 ## 🔐 Password Security
 
 ### Hashing Algorithm: PBKDF2-SHA256

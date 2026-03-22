@@ -18,12 +18,12 @@ def client():
 @pytest.fixture
 def admin_user(client):
     """Create admin user for testing"""
-    response = client.post('/api/auth/register', 
+    response = client.post('/api/auth/bootstrap/admin',
+        headers={'X-ADMIN-BOOTSTRAP-KEY': TestingConfig.ADMIN_BOOTSTRAP_KEY},
         json={
             'username': 'admin_test',
             'email': 'admin@test.com',
-            'password': 'Admin@12345',
-            'role': 'admin'
+            'password': 'Admin@12345'
         }
     )
     return response.get_json()
@@ -90,6 +90,53 @@ def test_registration_weak_password(client):
     data = response.get_json()
     assert 'at least 8 characters' in data['message']
 
+def test_public_registration_rejects_admin_role(client):
+    """Public register endpoint must not allow elevated roles."""
+    response = client.post('/api/auth/register',
+        json={
+            'username': 'badadmin',
+            'email': 'badadmin@test.com',
+            'password': 'Admin@12345',
+            'role': 'admin'
+        }
+    )
+    assert response.status_code == 403
+    data = response.get_json()
+    assert 'Public registration only allows the user role' in data['message']
+
+def test_bootstrap_admin_requires_key(client):
+    """Admin bootstrap endpoint should reject missing or invalid bootstrap key."""
+    response = client.post('/api/auth/bootstrap/admin',
+        json={
+            'username': 'admin_no_key',
+            'email': 'admin_no_key@test.com',
+            'password': 'Admin@12345'
+        }
+    )
+    assert response.status_code == 401
+
+def test_bootstrap_admin_creates_first_admin_only(client):
+    """Bootstrap endpoint can create only the first admin account."""
+    first = client.post('/api/auth/bootstrap/admin',
+        headers={'X-ADMIN-BOOTSTRAP-KEY': TestingConfig.ADMIN_BOOTSTRAP_KEY},
+        json={
+            'username': 'admin_one',
+            'email': 'admin_one@test.com',
+            'password': 'Admin@12345'
+        }
+    )
+    assert first.status_code == 201
+
+    second = client.post('/api/auth/bootstrap/admin',
+        headers={'X-ADMIN-BOOTSTRAP-KEY': TestingConfig.ADMIN_BOOTSTRAP_KEY},
+        json={
+            'username': 'admin_two',
+            'email': 'admin_two@test.com',
+            'password': 'Admin@12345'
+        }
+    )
+    assert second.status_code == 409
+
 def test_login_triggers_otp(client, regular_user):
     """Test that login triggers OTP request"""
     response = client.post('/api/auth/login',
@@ -115,6 +162,31 @@ def test_login_invalid_credentials(client):
     assert response.status_code == 401
     data = response.get_json()
     assert 'Invalid' in data['message']
+
+def test_admin_login_with_admin_user(client, admin_user):
+    """Test separate admin login endpoint with admin credentials"""
+    response = client.post('/api/auth/admin/login',
+        json={
+            'username': 'admin_test',
+            'password': 'Admin@12345'
+        }
+    )
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data['two_fa_required'] == True
+    assert data['username'] == 'admin_test'
+
+def test_admin_login_rejects_non_admin_user(client, regular_user):
+    """Test separate admin login endpoint denies non-admin users"""
+    response = client.post('/api/auth/admin/login',
+        json={
+            'username': 'user_test',
+            'password': 'User@12345'
+        }
+    )
+    assert response.status_code == 403
+    data = response.get_json()
+    assert 'Access denied' in data['message']
 
 def test_verify_otp_success(client, regular_user):
     """Test successful OTP verification"""

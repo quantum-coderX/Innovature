@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
-from datetime import datetime
+import hmac
+from datetime import datetime, timezone
 from database import db
 from config import Config
-from models import User, OTP
-from auth import mail, require_role, require_2fa_verified, require_2fa_and_role
+from models import User, OTP, utc_now
+from auth import mail, require_role, require_2fa_verified, require_2fa_and_role, validate_email_format
 from auth import (
     create_user, authenticate_user, create_otp_for_user, send_otp_email,
     verify_otp, create_jwt_token, get_current_user, update_last_login,
@@ -45,10 +46,53 @@ def health_check():
     return jsonify({
         'status': 'API is running',
         'message': 'Two-Factor Authentication API with Email OTP',
-        'timestamp': datetime.utcnow().isoformat()
+        'timestamp': utc_now().isoformat()
     }), 200
 
 # ==================== Auth Routes ====================
+
+def _process_login(username, password, required_role=None):
+    """Authenticate user, enforce optional role, and trigger OTP/token flow."""
+    user, auth_message = authenticate_user(username, password)
+
+    if not user:
+        return jsonify({'message': auth_message}), 401
+
+    if required_role and user.role != required_role:
+        return jsonify({'message': f'Access denied. {required_role.capitalize()} credentials required'}), 403
+
+    # If 2FA is enabled, send OTP
+    if user.two_fa_enabled:
+        otp = create_otp_for_user(user.id)
+        success, otp_message = send_otp_email(user, otp.otp_code)
+
+        if not success:
+            return jsonify({'message': otp_message}), 500
+
+        return jsonify({
+            'message': 'OTP sent successfully to your email',
+            'user_id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'two_fa_required': True,
+            'otp_expiry_minutes': 5
+        }), 200
+
+    # If 2FA is not enabled, create token immediately
+    access_token = create_jwt_token(user.id)
+    update_last_login(user.id)
+    log_login_attempt(user.id, success=True)
+
+    return jsonify({
+        'message': 'Login successful',
+        'access_token': access_token,
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role
+        }
+    }), 200
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
@@ -62,20 +106,74 @@ def register():
     username = data.get('username').strip()
     email = data.get('email').strip()
     password = data.get('password')
-    role = data.get('role', 'user')  # Default role is 'user'
+    requested_role = data.get('role', 'user').strip().lower() if data.get('role') else 'user'
+
+    if requested_role != 'user':
+        return jsonify({'message': 'Public registration only allows the user role'}), 403
+    
+    # Validate email format
+    is_valid_email, email_result = validate_email_format(email)
+    if not is_valid_email:
+        return jsonify({'message': f'Invalid email format: {email_result}'}), 400
+    
+    email = email_result  # Use normalized email
     
     # Validate password length
     if len(password) < 8:
         return jsonify({'message': 'Password must be at least 8 characters long'}), 400
     
     # Create user
-    user, message = create_user(username, email, password, role)
+    user, message = create_user(username, email, password, 'user')
     
     if not user:
         return jsonify({'message': message}), 400
     
     return jsonify({
         'message': 'User registered successfully',
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role
+        }
+    }), 201
+
+@app.route('/api/auth/bootstrap/admin', methods=['POST'])
+def bootstrap_admin():
+    """Create the first admin account using bootstrap key."""
+    if not app.config.get('ENABLE_ADMIN_BOOTSTRAP', False):
+        return jsonify({'message': 'Admin bootstrap is disabled'}), 403
+
+    provided_key = request.headers.get('X-ADMIN-BOOTSTRAP-KEY', '')
+    configured_key = app.config.get('ADMIN_BOOTSTRAP_KEY', '')
+
+    if not configured_key or not hmac.compare_digest(provided_key, configured_key):
+        return jsonify({'message': 'Invalid bootstrap key'}), 401
+
+    if User.query.filter_by(role='admin').first():
+        return jsonify({'message': 'Admin account already exists'}), 409
+
+    data = request.get_json()
+    if not data or not data.get('username') or not data.get('email') or not data.get('password'):
+        return jsonify({'message': 'Username, email, and password are required'}), 400
+
+    username = data.get('username').strip()
+    email = data.get('email').strip()
+    password = data.get('password')
+
+    is_valid_email, email_result = validate_email_format(email)
+    if not is_valid_email:
+        return jsonify({'message': f'Invalid email format: {email_result}'}), 400
+
+    if len(password) < 8:
+        return jsonify({'message': 'Password must be at least 8 characters long'}), 400
+
+    user, message = create_user(username, email_result, password, 'admin')
+    if not user:
+        return jsonify({'message': message}), 400
+
+    return jsonify({
+        'message': 'Admin bootstrap completed successfully',
         'user': {
             'id': user.id,
             'username': user.username,
@@ -94,45 +192,21 @@ def login():
     
     username = data.get('username').strip()
     password = data.get('password')
-    
-    # Authenticate user
-    user, auth_message = authenticate_user(username, password)
-    
-    if not user:
-        return jsonify({'message': auth_message}), 401
-    
-    # If 2FA is enabled, send OTP
-    if user.two_fa_enabled:
-        otp = create_otp_for_user(user.id)
-        success, otp_message = send_otp_email(user, otp.otp_code)
-        
-        if not success:
-            return jsonify({'message': otp_message}), 500
-        
-        return jsonify({
-            'message': 'OTP sent successfully to your email',
-            'user_id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'two_fa_required': True,
-            'otp_expiry_minutes': 5
-        }), 200
-    
-    # If 2FA is not enabled, create token immediately
-    access_token = create_jwt_token(user.id)
-    update_last_login(user.id)
-    log_login_attempt(user.id, success=True)
-    
-    return jsonify({
-        'message': 'Login successful',
-        'access_token': access_token,
-        'user': {
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'role': user.role
-        }
-    }), 200
+
+    return _process_login(username, password)
+
+@app.route('/api/auth/admin/login', methods=['POST'])
+def admin_login():
+    """Authenticate admin and send OTP"""
+    data = request.get_json()
+
+    if not data or not data.get('username') or not data.get('password'):
+        return jsonify({'message': 'Username and password are required'}), 400
+
+    username = data.get('username').strip()
+    password = data.get('password')
+
+    return _process_login(username, password, required_role='admin')
 
 @app.route('/api/auth/verify-otp', methods=['POST'])
 def verify_two_fa():
@@ -152,7 +226,7 @@ def verify_two_fa():
         return jsonify({'message': message}), 401
     
     # Create JWT token
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     access_token = create_jwt_token(user.id)
     update_last_login(user.id)
     log_login_attempt(user.id, success=True)
@@ -177,7 +251,7 @@ def resend_otp():
         return jsonify({'message': 'User ID is required'}), 400
     
     user_id = data.get('user_id')
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     
     if not user:
         return jsonify({'message': 'User not found'}), 404
@@ -225,12 +299,19 @@ def update_profile():
     user = get_current_user()
     
     if data.get('email'):
+        # Validate email format
+        is_valid_email, email_result = validate_email_format(data.get('email'))
+        if not is_valid_email:
+            return jsonify({'message': f'Invalid email format: {email_result}'}), 400
+        
+        email = email_result  # Use normalized email
+        
         # Check if email is already taken
-        existing_user = User.query.filter_by(email=data.get('email')).first()
+        existing_user = User.query.filter_by(email=email).first()
         if existing_user and existing_user.id != user.id:
             return jsonify({'message': 'Email already in use'}), 400
         
-        user.email = data.get('email')
+        user.email = email
         user.is_email_verified = False  # Require re-verification
     
     if data.get('username'):
@@ -280,7 +361,7 @@ def list_users():
 @require_role('admin')
 def get_user(user_id):
     """Get user details (Admin only)"""
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     
     if not user:
         return jsonify({'message': 'User not found'}), 404
@@ -304,7 +385,7 @@ def get_user(user_id):
 @require_role('admin')
 def lock_user(user_id):
     """Lock user account (Admin only)"""
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     
     if not user:
         return jsonify({'message': 'User not found'}), 404
@@ -318,7 +399,7 @@ def lock_user(user_id):
 @require_role('admin')
 def unlock_user(user_id):
     """Unlock user account (Admin only)"""
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     
     if not user:
         return jsonify({'message': 'User not found'}), 404
@@ -334,7 +415,7 @@ def unlock_user(user_id):
 def update_user_role(user_id):
     """Update user role (Admin only)"""
     data = request.get_json()
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     
     if not user:
         return jsonify({'message': 'User not found'}), 404
