@@ -2,13 +2,6 @@
 
 **Status:** Ready to Learn 📚 | **Date:** March 2026
 
-## 📌 Choose Your Learning Path
-
-👉 **NEW: 3-Day Incremental Learning** → [**Start Here: 3DAY_LEARNING_PATH.md**](3DAY_LEARNING_PATH.md)
-- **Day 1:** User Roles & Permissions + Password Hashing
-- **Day 2:** Middleware Basics & OTP Implementation
-- **Day 3:** 2FA with Account Lockout & Audit Logging
-
 ✅ **Complete Implementation Details Below:**
 
 A comprehensive authentication system implementing Two-Factor Authentication (2FA) with email-based OTP verification, role-based permissions, password hashing, middleware-based access control, and account lockout protection.
