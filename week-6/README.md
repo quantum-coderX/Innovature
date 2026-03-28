@@ -56,7 +56,7 @@ Extend Notes API with categories/tags, filter by category/tag, and search notes 
 
 - **Notes Updates**:
   - Update POST /notes to accept category_id and tags (list of tag ids).
-  - Update PUT /notes/<id> similarly.
+  - Update PATCH /notes/<id> similarly.
   - Add GET /notes?category=<id> to filter notes by category.
   - Add GET /notes?tag=<id> to filter notes by tag.
   - Add GET /notes?search=<keyword> to search notes by keyword in title or content.

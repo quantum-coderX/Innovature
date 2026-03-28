@@ -385,6 +385,12 @@ def get_user(user_id):
 @require_role('admin')
 def lock_user(user_id):
     """Lock user account (Admin only)"""
+    current_user = get_current_user()
+    
+    # Prevent admin from locking their own account
+    if current_user.id == user_id:
+        return jsonify({'message': 'Cannot lock your own account'}), 400
+    
     user = db.session.get(User, user_id)
     
     if not user:
@@ -414,6 +420,12 @@ def unlock_user(user_id):
 @require_role('admin')
 def update_user_role(user_id):
     """Update user role (Admin only)"""
+    current_user = get_current_user()
+    
+    # Prevent admin from changing their own role
+    if current_user.id == user_id:
+        return jsonify({'message': 'Cannot change your own role'}), 400
+    
     data = request.get_json()
     user = db.session.get(User, user_id)
     
@@ -426,6 +438,12 @@ def update_user_role(user_id):
     valid_roles = ['admin', 'user', 'moderator']
     if data.get('role') not in valid_roles:
         return jsonify({'message': f'Invalid role. Valid roles: {", ".join(valid_roles)}'}), 400
+    
+    # Prevent removing the last admin
+    if user.role == 'admin' and data.get('role') != 'admin':
+        admin_count = User.query.filter_by(role='admin').count()
+        if admin_count <= 1:
+            return jsonify({'message': 'Cannot remove the last admin account'}), 400
     
     user.role = data.get('role')
     db.session.commit()

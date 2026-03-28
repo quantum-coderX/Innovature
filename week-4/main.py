@@ -46,8 +46,11 @@ def main():
         db.update_student(args.id, args.name, args.grade)
         print('Student updated successfully!')
     elif args.command == 'delete':
-        db.delete_student(args.id)
-        print('Student deleted successfully!')
+        deleted = db.delete_student(args.id)
+        if deleted:
+            print('Student deleted successfully!')
+        else:
+            print(f'Student with ID {args.id} not found.')
     elif args.command == 'search':
         if args.type == 'name':
             students = db.search_by_name(args.value)

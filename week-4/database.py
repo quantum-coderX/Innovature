@@ -37,7 +37,9 @@ class Database:
 
     def delete_student(self, id):
         self.cur.execute('DELETE FROM students WHERE id=%s', (id,))
+        deleted = self.cur.rowcount > 0
         self.conn.commit()
+        return deleted
 
     def search_by_name(self, name):
         self.cur.execute('SELECT * FROM students WHERE name ILIKE %s', ('%' + name + '%',))
