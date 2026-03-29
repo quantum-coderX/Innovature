@@ -1,64 +1,200 @@
-# Week 9: E-commerce Backend Skeleton
+# Week 9: E-commerce Backend (Buyer/Seller + JWT)
 
-A basic Flask + SQLAlchemy API skeleton for:
-- Products
-- Categories
-- Users
-- Carts
-- Product search and filters (price/category)
-- Pagination
-- Aggregation endpoint
+Flask + SQLAlchemy + PostgreSQL backend for an e-commerce workflow with:
+- Buyer/Seller roles
+- JWT auth
+- Product search/filters/pagination
+- Cart checkout that deducts stock
+- Aggregation endpoints
 
-## Quick Start
+## Role Model
+
+- `1` = seller
+- `2` = buyer
+
+Rules:
+- Only sellers can create/update/delete products.
+- Both buyers and sellers can view products.
+- Out-of-stock products are hidden from product listings.
+- Checkout (`status=completed`) deducts product stock.
+
+## Tech Stack
+
+- Flask
+- Flask-JWT-Extended
+- SQLAlchemy + Flask-SQLAlchemy
+- PostgreSQL (Docker Compose)
+
+## Project Structure
+
+```text
+week-9/
+  main.py
+  auth.py
+  crud.py
+  models.py
+  serializers.py
+  config.py
+  database.py
+  schema.sql
+  api.postman_collection.json
+  routes/
+    __init__.py
+    auth_routes.py
+    product_routes.py
+    category_routes.py
+    cart_routes.py
+    aggregation_routes.py
+```
+
+## Run Locally
+
+1. Start PostgreSQL:
+
+```bash
+docker-compose up -d
+```
+
+2. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+3. Run API:
+
+```bash
 python main.py
 ```
 
-API base URL: `http://127.0.0.1:5000`
+4. Base URL:
 
-## Implemented Endpoints
+`http://127.0.0.1:5000`
 
-### Health
-- `GET /`
+## Important Database Note
 
-### Categories
-- `POST /api/categories`
-- `GET /api/categories`
-
-### Users
-- `POST /api/users`
-- `GET /api/users`
-
-### Products
-- `POST /api/products`
-- `GET /api/products`
-- `GET /api/products/<product_id>`
-- `GET /api/products/aggregations/by-category`
-
-### Carts
-- `POST /api/carts`
-- `POST /api/carts/<cart_id>/items`
-- `GET /api/carts/<cart_id>`
-
-## Product Search / Filters / Pagination
-
-`GET /api/products` supports:
-- `q`: keyword match on product name/description
-- `category_id`: filter by category
-- `min_price`: minimum price
-- `max_price`: maximum price
-- `page`: page number (default `1`)
-- `per_page`: page size (default `10`, max `100`)
-
-Example:
+Schema changed to include `seller_id` on products and role constraints.
+If you already had an old DB volume, reset in dev:
 
 ```bash
-curl "http://127.0.0.1:5000/api/products?q=phone&category_id=1&min_price=100&max_price=1500&page=1&per_page=5"
+docker-compose down -v
+docker-compose up -d
 ```
 
-## Notes
-- Uses SQLite by default (`ecommerce.db` file).
-- Database tables are auto-created on startup via `db.create_all()`.
-- `schema.sql` is included for a SQL-first setup if needed.
+## Auth Endpoints
+
+### Register
+`POST /api/auth/register`
+
+Body example:
+
+```json
+{
+  "name": "Sara Seller",
+  "email": "sara@example.com",
+  "password": "StrongPass123",
+  "role": 1
+}
+```
+
+`role` accepts `1|2` or `seller|buyer`.
+
+### Login
+`POST /api/auth/login`
+
+```json
+{
+  "email": "sara@example.com",
+  "password": "StrongPass123"
+}
+```
+
+### Current User
+`GET /api/auth/me` (JWT required)
+
+### Validate Token
+`GET /api/auth/validate` (JWT required)
+
+## Product Endpoints
+
+### Public Listing
+`GET /api/products`
+
+Supported query params:
+- `search`
+- `category_id`
+- `min_price`
+- `max_price`
+- `in_stock=true`
+- `sort_by=price|name|created_at`
+- `sort_order=asc|desc`
+- `page`
+- `per_page`
+
+Behavior:
+- Only `stock > 0` products are returned.
+
+### Product Detail
+`GET /api/products/{id}`
+
+Behavior:
+- Returns `404` if product is out of stock.
+
+### Seller-only Product Management
+- `POST /api/products`
+- `PUT /api/products/{id}`
+- `DELETE /api/products/{id}`
+
+JWT required and seller role required.
+Seller can modify only own products.
+
+## Category Endpoints
+
+- `POST /api/categories` (seller JWT required)
+- `GET /api/categories`
+- `GET /api/categories/{id}`
+- `PUT /api/categories/{id}` (seller JWT required)
+- `DELETE /api/categories/{id}` (seller JWT required)
+
+Category detail endpoint returns only in-stock products for that category.
+
+## Cart Endpoints (JWT Required)
+
+- `POST /api/carts` (creates cart for authenticated user)
+- `GET /api/carts`
+- `GET /api/carts/{id}`
+- `POST /api/carts/{id}/items`
+- `PUT /api/carts/{id}/items/{item_id}`
+- `DELETE /api/carts/{id}/items/{item_id}`
+- `POST /api/carts/{id}/clear`
+- `PUT /api/carts/{id}/status`
+- `DELETE /api/carts/{id}`
+
+Behavior:
+- Users can access only their own carts.
+- On `status=completed`, stock is validated then deducted.
+- Repeating `completed` does not deduct stock twice.
+
+## Aggregation Endpoints
+
+- `GET /api/aggregations/stats`
+- `GET /api/aggregations/category-breakdown`
+- `GET /api/aggregations/price-distribution`
+- `GET /api/aggregations/cart-analytics`
+
+## Postman
+
+Import `api.postman_collection.json` and run in this order:
+1. Register seller
+2. Login seller
+3. Create product
+4. Register buyer
+5. Login buyer
+6. Browse products
+7. Create cart and checkout
+
+## Known Design Choices
+
+- Auth and role checks are enforced at route level.
+- `crud.py` contains shared business operations (public product query and checkout stock deduction).
+- User CRUD endpoints were removed from active API as requested.

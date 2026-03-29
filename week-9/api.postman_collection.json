@@ -1,195 +1,208 @@
 {
   "info": {
-    "name": "Week 9 - E-commerce API",
-    "_postman_id": "8d9aab74-2c40-4f90-b4d2-3f5f15c83065",
-    "description": "Basic skeleton collection for Week 9 e-commerce backend",
+    "name": "Week 9 - Buyer/Seller E-commerce API",
+    "description": "JWT-based buyer/seller ecommerce backend. Follow numbered requests 01-05 first to set up tokens.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:5000" },
+    { "key": "seller_token", "value": "" },
+    { "key": "buyer_token", "value": "" },
+    { "key": "product_id", "value": "1" },
+    { "key": "cart_id", "value": "1" }
+  ],
   "item": [
     {
-      "name": "Health Check",
+      "name": "🔧 SETUP: 01 - Health Check",
+      "request": { "method": "GET", "url": { "raw": "{{base_url}}/", "host": ["{{base_url}}"], "path": [""] } }
+    },
+    {
+      "name": "👤 SETUP: 02 - Register Seller",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"name\":\"Seller One\",\"email\":\"seller@example.com\",\"password\":\"StrongPass123\",\"role\":1}" },
+        "url": { "raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"] }
+      }
+    },
+    {
+      "name": "👤 SETUP: 03 - Register Buyer",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"name\":\"Buyer One\",\"email\":\"buyer@example.com\",\"password\":\"StrongPass123\",\"role\":2}" },
+        "url": { "raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"] }
+      }
+    },
+    {
+      "name": "🔐 SETUP: 04 - Login Seller (COPY TOKEN)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.environment.set('seller_token', pm.response.json().data.access_token);"]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"email\":\"seller@example.com\",\"password\":\"StrongPass123\"}" },
+        "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+      }
+    },
+    {
+      "name": "🔐 SETUP: 05 - Login Buyer (COPY TOKEN)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.environment.set('buyer_token', pm.response.json().data.access_token);"]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"email\":\"buyer@example.com\",\"password\":\"StrongPass123\"}" },
+        "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+      }
+    },
+    {
+      "name": "✅ 06 - Seller: Validate Token",
       "request": {
         "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/",
-          "host": ["{{base_url}}"],
-          "path": [""]
-        }
+        "header": [{ "key": "Authorization", "value": "Bearer {{seller_token}}" }],
+        "url": { "raw": "{{base_url}}/api/auth/validate", "host": ["{{base_url}}"], "path": ["api", "auth", "validate"] }
       }
     },
     {
-      "name": "Create Category",
+      "name": "✅ 07 - Create Category",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.environment.set('category_id', pm.response.json().data.id);"]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
+          { "key": "Authorization", "value": "Bearer {{seller_token}}" },
+          { "key": "Content-Type", "value": "application/json" }
         ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"Electronics\",\n  \"description\": \"Devices and gadgets\"\n}"
-        },
-        "url": {
-          "raw": "{{base_url}}/api/categories",
-          "host": ["{{base_url}}"],
-          "path": ["api", "categories"]
-        }
+        "body": { "mode": "raw", "raw": "{\"name\":\"Electronics\",\"description\":\"Devices\"}" },
+        "url": { "raw": "{{base_url}}/api/categories", "host": ["{{base_url}}"], "path": ["api", "categories"] }
       }
     },
     {
-      "name": "Create User",
+      "name": "✅ 08 - Seller: Create Product",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.environment.set('product_id', pm.response.json().data.id);"]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
+          { "key": "Authorization", "value": "Bearer {{seller_token}}" },
+          { "key": "Content-Type", "value": "application/json" }
         ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\"\n}"
-        },
-        "url": {
-          "raw": "{{base_url}}/api/users",
-          "host": ["{{base_url}}"],
-          "path": ["api", "users"]
-        }
+        "body": { "mode": "raw", "raw": "{\"name\":\"Laptop Pro\",\"price\":999.99,\"stock\":10,\"sku\":\"LAPTOP-001\",\"category_id\":1}" },
+        "url": { "raw": "{{base_url}}/api/products", "host": ["{{base_url}}"], "path": ["api", "products"] }
       }
     },
     {
-      "name": "Create Product",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"Smartphone\",\n  \"description\": \"128GB model\",\n  \"price\": 499.99,\n  \"stock\": 10,\n  \"category_id\": 1\n}"
-        },
-        "url": {
-          "raw": "{{base_url}}/api/products",
-          "host": ["{{base_url}}"],
-          "path": ["api", "products"]
-        }
-      }
-    },
-    {
-      "name": "List Products (Search + Filters + Pagination)",
+      "name": "📦 09 - Public: List Products",
       "request": {
         "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/products?q=phone&category_id=1&min_price=100&max_price=1000&page=1&per_page=5",
-          "host": ["{{base_url}}"],
-          "path": ["api", "products"],
-          "query": [
-            {
-              "key": "q",
-              "value": "phone"
-            },
-            {
-              "key": "category_id",
-              "value": "1"
-            },
-            {
-              "key": "min_price",
-              "value": "100"
-            },
-            {
-              "key": "max_price",
-              "value": "1000"
-            },
-            {
-              "key": "page",
-              "value": "1"
-            },
-            {
-              "key": "per_page",
-              "value": "5"
-            }
-          ]
-        }
+        "url": { "raw": "{{base_url}}/api/products?search=laptop&page=1&per_page=10", "host": ["{{base_url}}"], "path": ["api", "products"], "query": [{"key":"search","value":"laptop"}] }
       }
     },
     {
-      "name": "Aggregation - Products By Category",
+      "name": "📦 10 - Public: Get Product",
       "request": {
         "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/products/aggregations/by-category",
-          "host": ["{{base_url}}"],
-          "path": ["api", "products", "aggregations", "by-category"]
-        }
+        "url": { "raw": "{{base_url}}/api/products/{{product_id}}", "host": ["{{base_url}}"], "path": ["api", "products", "{{product_id}}"] }
       }
     },
     {
-      "name": "Create Cart",
+      "name": "🛒 11 - Buyer: Create Cart",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.environment.set('cart_id', pm.response.json().data.id);"]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{buyer_token}}" }],
+        "url": { "raw": "{{base_url}}/api/carts", "host": ["{{base_url}}"], "path": ["api", "carts"] }
+      }
+    },
+    {
+      "name": "🛒 12 - Buyer: Add Item to Cart",
       "request": {
         "method": "POST",
         "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
+          { "key": "Authorization", "value": "Bearer {{buyer_token}}" },
+          { "key": "Content-Type", "value": "application/json" }
         ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"user_id\": 1\n}"
-        },
-        "url": {
-          "raw": "{{base_url}}/api/carts",
-          "host": ["{{base_url}}"],
-          "path": ["api", "carts"]
-        }
+        "body": { "mode": "raw", "raw": "{\"product_id\":{{product_id}},\"quantity\":2}" },
+        "url": { "raw": "{{base_url}}/api/carts/{{cart_id}}/items", "host": ["{{base_url}}"], "path": ["api", "carts", "{{cart_id}}", "items"] }
       }
     },
     {
-      "name": "Add Item to Cart",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"product_id\": 1,\n  \"quantity\": 2\n}"
-        },
-        "url": {
-          "raw": "{{base_url}}/api/carts/1/items",
-          "host": ["{{base_url}}"],
-          "path": ["api", "carts", "1", "items"]
-        }
-      }
-    },
-    {
-      "name": "Get Cart",
+      "name": "🛒 13 - Buyer: Get Cart",
       "request": {
         "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/carts/1",
-          "host": ["{{base_url}}"],
-          "path": ["api", "carts", "1"]
-        }
+        "header": [{ "key": "Authorization", "value": "Bearer {{buyer_token}}" }],
+        "url": { "raw": "{{base_url}}/api/carts/{{cart_id}}", "host": ["{{base_url}}"], "path": ["api", "carts", "{{cart_id}}"] }
       }
-    }
-  ],
-  "variable": [
+    },
     {
-      "key": "base_url",
-      "value": "http://127.0.0.1:5000"
+      "name": "💳 14 - Buyer: Complete Checkout",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{buyer_token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\"status\":\"completed\"}" },
+        "url": { "raw": "{{base_url}}/api/carts/{{cart_id}}/status", "host": ["{{base_url}}"], "path": ["api", "carts", "{{cart_id}}", "status"] }
+      }
+    },
+    {
+      "name": "📊 15 - Aggregations: Stats",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/api/aggregations/stats", "host": ["{{base_url}}"], "path": ["api", "aggregations", "stats"] }
+      }
+    },
+    {
+      "name": "📊 16 - Aggregations: Category Breakdown",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/api/aggregations/category-breakdown", "host": ["{{base_url}}"], "path": ["api", "aggregations", "category-breakdown"] }
+      }
+    },
+    {
+      "name": "📊 17 - Aggregations: Cart Analytics",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/api/aggregations/cart-analytics", "host": ["{{base_url}}"], "path": ["api", "aggregations", "cart-analytics"] }
+      }
     }
   ]
 }
