@@ -115,6 +115,14 @@ Body example:
 ### Validate Token
 `GET /api/auth/validate` (JWT required)
 
+Use this header format on all JWT-protected endpoints:
+
+```http
+Authorization: Bearer <access_token>
+```
+
+If token is missing or malformed (for example `Bearer undefined`), API returns `401 Unauthorized` with a hint message.
+
 ## Product Endpoints
 
 ### Public Listing

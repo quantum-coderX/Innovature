@@ -10,7 +10,7 @@ class Config:
         "postgresql://ecommerce_user:ecommerce_password@localhost:5432/ecommerce_db"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ECHO = True  # Log SQL queries
+    SQLALCHEMY_ECHO = False  # Log SQL queries
     
     # JSON
     JSON_SORT_KEYS = False

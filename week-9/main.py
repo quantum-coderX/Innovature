@@ -15,6 +15,53 @@ app.config.from_object(Config)
 db.init_app(app)
 jwt = JWTManager(app)
 
+
+# ==================== JWT Error Handlers ====================
+
+@jwt.unauthorized_loader
+def jwt_missing_token(reason):
+    return jsonify({
+        'error': 'Unauthorized',
+        'message': reason,
+        'hint': 'Send header: Authorization: Bearer <access_token>'
+    }), 401
+
+
+@jwt.invalid_token_loader
+def jwt_invalid_token(reason):
+    return jsonify({
+        'error': 'Unauthorized',
+        'message': f'Invalid token: {reason}',
+        'hint': 'Re-login to get a valid access token and send Authorization: Bearer <access_token>'
+    }), 401
+
+
+@jwt.expired_token_loader
+def jwt_expired_token(jwt_header, jwt_payload):
+    return jsonify({
+        'error': 'Unauthorized',
+        'message': 'Access token has expired',
+        'hint': 'Login again to refresh your token'
+    }), 401
+
+
+@jwt.revoked_token_loader
+def jwt_revoked_token(jwt_header, jwt_payload):
+    return jsonify({
+        'error': 'Unauthorized',
+        'message': 'Token has been revoked',
+        'hint': 'Login again to get a new token'
+    }), 401
+
+
+@jwt.needs_fresh_token_loader
+def jwt_needs_fresh_token(jwt_header, jwt_payload):
+    return jsonify({
+        'error': 'Unauthorized',
+        'message': 'Fresh token required',
+        'hint': 'Authenticate again and retry'
+    }), 401
+
 # Register all blueprints
 register_blueprints(app)
 
