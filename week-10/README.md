@@ -65,14 +65,14 @@ pip install -r requirements.txt
 ```
 
 ### 2. Configure environment
-Copy `.env.example` to `.env` and fill in your values (the defaults work with the docker-compose from week-9).
+Copy `.env.example` to `.env` and fill in your values (the defaults work with the week-10 docker-compose file).
 
-### 3. Start database (reuse week-9 docker-compose)
+### 3. Start database
 ```bash
-cd ../week-9
 docker-compose up -d
-cd ../week-10
 ```
+
+Run this from the `week-10` directory so it uses the new compose file.
 
 ### 4. Run the server
 ```bash
@@ -114,3 +114,11 @@ Server starts at **http://localhost:5000**
 Pillow==10.3.0
 ```
 All other dependencies identical to week-9.
+
+## Image Retrieval Screenshots
+
+Screenshots showing the image retrieval flow are available below:
+
+![Image retrieval result 1](static/Screenshots/Screenshot%202026-04-04%20203339.png)
+
+![Image retrieval result 2](static/Screenshots/Screenshot%202026-04-04%20203428.png)
