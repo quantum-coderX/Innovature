@@ -1,0 +1,266 @@
+{
+  "info": {
+    "name": "Week 10 – Product Image Upload API",
+    "_postman_id": "week10-image-api",
+    "description": "E-commerce API with product image upload, validation, and auto-thumbnail generation.\n\nWeek 10 extends Week 9 with:\n- Multiple product images (up to 5 per product)\n- MIME type + size validation (JPEG/PNG/WebP, ≤5 MB)\n- Automatic 300×300 thumbnail generation via Pillow\n- Static file serving at /uploads/\n\nBase URL: http://localhost:5000\n\nAuth flow:\n1. Register as seller\n2. Login → copy access_token\n3. Set Authorization: Bearer <token> in protected requests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:5000", "type": "string" },
+    { "key": "access_token", "value": "", "type": "string" },
+    { "key": "product_id", "value": "1", "type": "string" },
+    { "key": "image_id", "value": "1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Seller",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Seller\",\n  \"email\": \"seller@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"seller\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login Seller",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.access_token) {",
+                  "    pm.collectionVariables.set('access_token', json.data.access_token);",
+                  "    console.log('Token saved!');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"seller@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/products",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Wireless Headphones\",\n  \"description\": \"Premium noise cancelling headphones\",\n  \"price\": 299.99,\n  \"stock\": 50,\n  \"category_id\": 1,\n  \"sku\": \"WH-001\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Product (with images)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/products/{{product_id}}"
+          }
+        },
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/products?page=1&per_page=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Product Images (Week 10)",
+      "item": [
+        {
+          "name": "Upload Images (multipart)",
+          "_description": "Upload 1-5 images. Field name must be 'images'. Supports JPEG, PNG, WebP up to 5 MB each.",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/products/{{product_id}}/images",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": [],
+                  "description": "Select one or more image files (JPEG/PNG/WebP, max 5 MB each)"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "201 – Upload Success",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"data\": {\n    \"uploaded\": [\n      {\n        \"id\": 1,\n        \"product_id\": 1,\n        \"filename\": \"abc123_photo.jpg\",\n        \"thumbnail\": \"thumb_abc123_photo.jpg\",\n        \"image_url\": \"/uploads/products/abc123_photo.jpg\",\n        \"thumbnail_url\": \"/uploads/thumbnails/thumb_abc123_photo.jpg\",\n        \"file_size\": 204800,\n        \"mime_type\": \"image/jpeg\",\n        \"is_primary\": true,\n        \"created_at\": \"2026-04-02T06:00:00+00:00\"\n      }\n    ],\n    \"errors\": [],\n    \"total_images\": 1\n  },\n  \"message\": \"1 image(s) uploaded successfully\"\n}"
+            },
+            {
+              "name": "400 – File Too Large",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"error\": \"File too large. Maximum allowed size is 5 MB\"\n}"
+            },
+            {
+              "name": "400 – Invalid File Type",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"error\": \"All files failed validation\",\n  \"details\": [\n    { \"filename\": \"doc.txt\", \"error\": \"Invalid file type. Allowed types: image/jpeg, image/png, image/webp\" }\n  ]\n}"
+            },
+            {
+              "name": "400 – Max Images Exceeded",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"error\": \"Upload rejected: product already has 5 image(s). Maximum is 5. You can upload at most 0 more.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Product Images",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/products/{{product_id}}/images"
+          },
+          "response": [
+            {
+              "name": "200 – Images Listed",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"data\": {\n    \"product_id\": 1,\n    \"product_name\": \"Wireless Headphones\",\n    \"count\": 2,\n    \"images\": [\n      {\n        \"id\": 1,\n        \"product_id\": 1,\n        \"filename\": \"abc123_photo.jpg\",\n        \"thumbnail\": \"thumb_abc123_photo.jpg\",\n        \"image_url\": \"/uploads/products/abc123_photo.jpg\",\n        \"thumbnail_url\": \"/uploads/thumbnails/thumb_abc123_photo.jpg\",\n        \"file_size\": 204800,\n        \"mime_type\": \"image/jpeg\",\n        \"is_primary\": true,\n        \"created_at\": \"2026-04-02T06:00:00+00:00\"\n      },\n      {\n        \"id\": 2,\n        \"product_id\": 1,\n        \"filename\": \"def456_side_view.png\",\n        \"thumbnail\": \"thumb_def456_side_view.jpg\",\n        \"image_url\": \"/uploads/products/def456_side_view.png\",\n        \"thumbnail_url\": \"/uploads/thumbnails/thumb_def456_side_view.jpg\",\n        \"file_size\": 98304,\n        \"mime_type\": \"image/png\",\n        \"is_primary\": false,\n        \"created_at\": \"2026-04-02T06:01:00+00:00\"\n      }\n    ]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Set Primary Image",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/products/{{product_id}}/images/{{image_id}}/primary"
+          },
+          "response": [
+            {
+              "name": "200 – Primary Updated",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"data\": {\n    \"id\": 2,\n    \"is_primary\": true\n  },\n  \"message\": \"Primary image updated\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Image",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/products/{{product_id}}/images/{{image_id}}"
+          },
+          "response": [
+            {
+              "name": "200 – Deleted",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"data\": null,\n  \"message\": \"Image deleted successfully\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "View Original Image in Browser",
+          "_description": "Open this URL directly in a browser tab to view the image.",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/uploads/products/REPLACE_WITH_FILENAME.jpg"
+          }
+        },
+        {
+          "name": "View Thumbnail in Browser",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/uploads/thumbnails/thumb_REPLACE_WITH_FILENAME.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": "{{base_url}}/api/categories",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics\",\n  \"description\": \"Electronic devices and accessories\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/categories"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Aggregations",
+      "item": [
+        {
+          "name": "Get Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/aggregations/stats"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/"
+      }
+    }
+  ]
+}

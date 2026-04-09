@@ -1,0 +1,9 @@
+# gitignore for week-10
+__pycache__/
+*.pyc
+*.pyo
+.env
+instance/
+.venv/
+static/uploads/products/
+static/uploads/thumbnails/

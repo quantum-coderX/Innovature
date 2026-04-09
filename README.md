@@ -2,7 +2,7 @@
 
 **CSE STUDENT @ MUTHOOT INSTITUTE OF TECHNOLOGY AND SCIENCE (MITS)**
 
-This repository tracks my weekly learning and project development from Week 1 to Week 12. Each week contains new projects, skills, and accomplishments.
+This repository tracks my weekly learning and project development from Week 1 to Week 18. Each week contains new projects, skills, and accomplishments.
 
 ---
 
@@ -81,6 +81,21 @@ This repository tracks my weekly learning and project development from Week 1 to
 
 **Run:** `docker-compose up -d` then `python week-5/main.py`
 
+### [Week 10: Product Image Upload API](./week-10/README.md)
+**Status:** In Progress ⏳
+
+- **Project:** E-commerce API with multi-image upload and thumbnail generation
+- **Skills:** Flask, JWT Authentication, PostgreSQL, Docker, Pillow, API Design, File Uploads
+- **Highlights:**
+	- Added multi-image upload for products with validation
+	- Generated 300x300 thumbnails automatically with Pillow
+	- Served uploaded images through static routes
+	- Extended product responses with image metadata
+	- Kept seller-only controls for image management
+	- Reused the existing e-commerce backend structure cleanly
+
+**Run:** `docker-compose up -d` then `python week-10/main.py`
+
 ---
 
 ## Quick Links
@@ -92,9 +107,11 @@ This repository tracks my weekly learning and project development from Week 1 to
 | [3](./week-3) | Library Management System | Completed ✅ |
 | [4](./week-4) | Student Database System | Completed ✅ |
 | [5](./week-5) | User Notes API | Completed ✅ |
-| 6-12 | *Coming with tasks* | Pending |
+| 6-9 | *Already present in repo* | Completed ✅ |
+| 10 | Product Image Upload API | In Progress ⏳ |
+| 11-12 | *Coming with tasks* | Pending |
 
-**Note:** Weeks 1-5 completed. New week folders will be created as tasks are assigned.
+**Note:** Weeks 1-9 are completed in the repository, and week 10 is still in progress. New week folders will be created as tasks are assigned.
 
 ---
 
@@ -121,6 +138,8 @@ I'm a passionate **Data Scientist & Engineer** specializing in:
 
 ```
 Innovature/
+├── index.html
+├── README.md
 ├── week-1/              # Portfolio & Website Design
 │   ├── index.html
 │   ├── projects.html
@@ -160,8 +179,55 @@ Innovature/
 │   ├── docker-compose.yml
 │   ├── notes_api.postman_collection.json
 │   └── README.md
-├── week-6/              # (Upcoming)
-├── ...
+├── week-6/              # Notes API refinement
+│   ├── main.py
+│   ├── models.py
+│   ├── auth.py
+│   ├── crud.py
+│   ├── config.py
+│   ├── docker-compose.yml
+│   ├── test_api.py
+│   └── README.md
+├── week-7/              # Notes API with routes
+│   ├── main.py
+│   ├── models.py
+│   ├── auth.py
+│   ├── crud.py
+│   ├── routes/
+│   ├── serializers.py
+│   └── README.md
+├── week-8/              # OTP-authenticated notes API
+│   ├── main.py
+│   ├── models.py
+│   ├── auth.py
+│   ├── config.py
+│   ├── test_api.py
+│   ├── test_otp_flow.py
+│   ├── QUICKSTART.md
+│   ├── SECURITY.md
+│   └── DEPLOYMENT.md
+├── week-9/              # Notes API architecture update
+│   ├── main.py
+│   ├── models.py
+│   ├── auth.py
+│   ├── crud.py
+│   ├── routes/
+│   ├── serializers.py
+│   ├── schema.sql
+│   ├── QUICKSTART.md
+│   └── ARCHITECTURE.md
+├── week-10/             # Product Image Upload API
+│   ├── main.py
+│   ├── models.py
+│   ├── auth.py
+│   ├── crud.py
+│   ├── config.py
+│   ├── image_utils.py
+│   ├── routes/
+│   ├── serializers.py
+│   ├── static/
+│   ├── docker-compose.yml
+│   └── README.md
 └── week-12/             # (Upcoming)
 ```
 
@@ -188,8 +254,8 @@ This is an ongoing project tracking my learning journey. Each week, I'll add new
 
 ---
 
-**Last Updated:** February 9, 2026
-**Current Week:** 2
+**Last Updated:** April 3, 2026
+**Current Week:** 10
 
 ## Installation & Setup
 
