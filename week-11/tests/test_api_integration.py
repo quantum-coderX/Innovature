@@ -101,8 +101,11 @@ def test_cart_checkout_flow_reduces_stock(client, app, make_user, make_category,
             stock=5,
             sku="MOUSE-1",
         )
+        # Capture plain ints before session closes
+        buyer_id, buyer_role = buyer.id, buyer.role
+        product_id = product.id
 
-    buyer_headers = make_auth_header(buyer.id, role_code=buyer.role)
+    buyer_headers = make_auth_header(buyer_id, role_code=buyer_role)
 
     create_cart = client.post("/api/carts", headers=buyer_headers)
     assert create_cart.status_code == 201
@@ -111,7 +114,7 @@ def test_cart_checkout_flow_reduces_stock(client, app, make_user, make_category,
     add_item = client.post(
         f"/api/carts/{cart_id}/items",
         headers=buyer_headers,
-        json={"product_id": product.id, "quantity": 2},
+        json={"product_id": product_id, "quantity": 2},
     )
     assert add_item.status_code == 201
 
@@ -123,7 +126,9 @@ def test_cart_checkout_flow_reduces_stock(client, app, make_user, make_category,
     assert complete.status_code == 200
 
     with app.app_context():
-        refreshed = db.session.get(Product, product.id)
+        from database import db
+        from models import Product
+        refreshed = db.session.get(Product, product_id)
         assert refreshed.stock == 3
 
 
@@ -152,12 +157,15 @@ def test_image_routes_with_mocked_external_processor(client, app, monkeypatch, m
             stock=4,
             sku="CAM-1",
         )
+        # Capture plain ints before session closes
+        seller_id, seller_role = seller.id, seller.role
+        product_id = product.id
 
-    seller_headers = make_auth_header(seller.id, role_code=seller.role)
+    seller_headers = make_auth_header(seller_id, role_code=seller_role)
 
     data = {"images": (io.BytesIO(b"dummy-image"), "photo.jpg")}
     upload = client.post(
-        f"/api/products/{product.id}/images",
+        f"/api/products/{product_id}/images",
         headers=seller_headers,
         data=data,
         content_type="multipart/form-data",
@@ -167,24 +175,24 @@ def test_image_routes_with_mocked_external_processor(client, app, monkeypatch, m
     assert payload["total_images"] == 1
     image_id = payload["uploaded"][0]["id"]
 
-    listed = client.get(f"/api/products/{product.id}/images")
+    listed = client.get(f"/api/products/{product_id}/images")
     assert listed.status_code == 200
     assert listed.get_json()["data"]["count"] == 1
 
     make_primary = client.patch(
-        f"/api/products/{product.id}/images/{image_id}/primary",
+        f"/api/products/{product_id}/images/{image_id}/primary",
         headers=seller_headers,
     )
     assert make_primary.status_code == 200
 
     delete_res = client.delete(
-        f"/api/products/{product.id}/images/{image_id}",
+        f"/api/products/{product_id}/images/{image_id}",
         headers=seller_headers,
     )
     assert delete_res.status_code == 200
 
     with app.app_context():
-        assert ProductImage.query.filter_by(product_id=product.id).count() == 0
+        assert ProductImage.query.filter_by(product_id=product_id).count() == 0
 
 
 def test_aggregation_endpoints(client, app, make_user, make_category, make_product):

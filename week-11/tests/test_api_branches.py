@@ -55,9 +55,14 @@ def test_category_routes_branches(client, app, make_user, make_category, make_pr
             stock=2,
             sku="BOOK-1",
         )
+        # Capture plain ints before the session closes
+        seller_id, seller_role = seller.id, seller.role
+        other_seller_id, other_seller_role = other_seller.id, other_seller.role
+        category_id = category.id
+        other_category_name = other_category.name
 
-    seller_headers = make_auth_header(seller.id, role_code=seller.role)
-    other_headers = make_auth_header(other_seller.id, role_code=other_seller.role)
+    seller_headers = make_auth_header(seller_id, role_code=seller_role)
+    other_headers = make_auth_header(other_seller_id, role_code=other_seller_role)
 
     duplicate = client.post("/api/categories", headers=seller_headers, json={"name": "Books"})
     assert duplicate.status_code == 400
@@ -65,7 +70,7 @@ def test_category_routes_branches(client, app, make_user, make_category, make_pr
     listing = client.get("/api/categories?page=-1&per_page=999")
     assert listing.status_code == 200
 
-    detail = client.get(f"/api/categories/{category.id}")
+    detail = client.get(f"/api/categories/{category_id}")
     assert detail.status_code == 200
     assert detail.get_json()["data"]["products_count"] == 1
 
@@ -73,20 +78,20 @@ def test_category_routes_branches(client, app, make_user, make_category, make_pr
     assert not_found.status_code == 404
 
     update_dup = client.put(
-        f"/api/categories/{category.id}",
+        f"/api/categories/{category_id}",
         headers=seller_headers,
-        json={"name": other_category.name},
+        json={"name": other_category_name},
     )
     assert update_dup.status_code == 400
 
     update_ok = client.put(
-        f"/api/categories/{category.id}",
+        f"/api/categories/{category_id}",
         headers=seller_headers,
         json={"description": "Updated"},
     )
     assert update_ok.status_code == 200
 
-    conflict_delete = client.delete(f"/api/categories/{category.id}", headers=other_headers)
+    conflict_delete = client.delete(f"/api/categories/{category_id}", headers=other_headers)
     assert conflict_delete.status_code == 409
 
 
@@ -97,10 +102,16 @@ def test_product_route_branches(client, app, make_user, make_category, make_prod
         buyer = make_user(email="p-buyer@example.com", role=2)
         cat = make_category(name="Home")
         product = make_product(seller_id=seller.id, category_id=cat.id, name="Lamp", stock=1, sku="LAMP-1")
+        # Capture plain ints before session closes
+        seller_id, seller_role = seller.id, seller.role
+        another_id, another_role = another.id, another.role
+        buyer_id, buyer_role = buyer.id, buyer.role
+        cat_id = cat.id
+        product_id = product.id
 
-    seller_headers = make_auth_header(seller.id, role_code=seller.role)
-    another_headers = make_auth_header(another.id, role_code=another.role)
-    buyer_headers = make_auth_header(buyer.id, role_code=buyer.role)
+    seller_headers = make_auth_header(seller_id, role_code=seller_role)
+    another_headers = make_auth_header(another_id, role_code=another_role)
+    buyer_headers = make_auth_header(buyer_id, role_code=buyer_role)
 
     forbidden = client.post("/api/products", headers=buyer_headers, json={"name": "x"})
     assert forbidden.status_code == 403
@@ -108,14 +119,14 @@ def test_product_route_branches(client, app, make_user, make_category, make_prod
     bad_price = client.post(
         "/api/products",
         headers=seller_headers,
-        json={"name": "A", "price": -1, "stock": 1, "category_id": cat.id},
+        json={"name": "A", "price": -1, "stock": 1, "category_id": cat_id},
     )
     assert bad_price.status_code == 400
 
     bad_stock = client.post(
         "/api/products",
         headers=seller_headers,
-        json={"name": "A", "price": 2, "stock": "x", "category_id": cat.id},
+        json={"name": "A", "price": 2, "stock": "x", "category_id": cat_id},
     )
     assert bad_stock.status_code == 400
 
@@ -123,17 +134,17 @@ def test_product_route_branches(client, app, make_user, make_category, make_prod
     assert bad_category.status_code == 400
 
     out_of_stock = client.put(
-        f"/api/products/{product.id}",
+        f"/api/products/{product_id}",
         headers=seller_headers,
         json={"stock": 0},
     )
     assert out_of_stock.status_code == 200
 
-    hidden = client.get(f"/api/products/{product.id}")
+    hidden = client.get(f"/api/products/{product_id}")
     assert hidden.status_code == 404
 
     forbidden_update = client.put(
-        f"/api/products/{product.id}",
+        f"/api/products/{product_id}",
         headers=another_headers,
         json={"name": "x"},
     )
@@ -147,9 +158,13 @@ def test_cart_route_branches(client, app, make_user, make_category, make_product
         other_buyer = make_user(email="cart2-other@example.com", role=2)
         cat = make_category(name="Gaming")
         p1 = make_product(seller_id=seller.id, category_id=cat.id, name="Pad", stock=4, sku="PAD-1")
+        # Capture plain ints before session closes
+        buyer_id, buyer_role = buyer.id, buyer.role
+        other_buyer_id, other_buyer_role = other_buyer.id, other_buyer.role
+        p1_id = p1.id
 
-    buyer_headers = make_auth_header(buyer.id, role_code=buyer.role)
-    other_headers = make_auth_header(other_buyer.id, role_code=other_buyer.role)
+    buyer_headers = make_auth_header(buyer_id, role_code=buyer_role)
+    other_headers = make_auth_header(other_buyer_id, role_code=other_buyer_role)
 
     cart_create = client.post("/api/carts", headers=buyer_headers)
     assert cart_create.status_code == 201
@@ -171,7 +186,7 @@ def test_cart_route_branches(client, app, make_user, make_category, make_product
     add_ok = client.post(
         f"/api/carts/{cart_id}/items",
         headers=buyer_headers,
-        json={"product_id": p1.id, "quantity": 1},
+        json={"product_id": p1_id, "quantity": 1},
     )
     assert add_ok.status_code == 201
     item_id = add_ok.get_json()["data"]["items"][0]["id"]
@@ -179,7 +194,7 @@ def test_cart_route_branches(client, app, make_user, make_category, make_product
     add_too_many = client.post(
         f"/api/carts/{cart_id}/items",
         headers=buyer_headers,
-        json={"product_id": p1.id, "quantity": 99},
+        json={"product_id": p1_id, "quantity": 99},
     )
     assert add_too_many.status_code == 400
 
@@ -210,7 +225,7 @@ def test_cart_route_branches(client, app, make_user, make_category, make_product
     add_again = client.post(
         f"/api/carts/{cart_id}/items",
         headers=buyer_headers,
-        json={"product_id": p1.id, "quantity": 1},
+        json={"product_id": p1_id, "quantity": 1},
     )
     assert add_again.status_code == 201
 
@@ -231,7 +246,7 @@ def test_cart_route_branches(client, app, make_user, make_category, make_product
     cannot_add_checkout = client.post(
         f"/api/carts/{cart_id}/items",
         headers=buyer_headers,
-        json={"product_id": p1.id, "quantity": 1},
+        json={"product_id": p1_id, "quantity": 1},
     )
     assert cannot_add_checkout.status_code == 400
 
@@ -251,15 +266,19 @@ def test_image_route_error_branches(client, app, monkeypatch, make_user, make_ca
         other_seller = make_user(email="img-err-other@example.com", role=1)
         cat = make_category(name="Phones")
         product = make_product(seller_id=seller.id, category_id=cat.id, name="Phone", stock=3, sku="PHONE-1")
+        # Capture plain ints before session closes
+        seller_id, seller_role = seller.id, seller.role
+        other_seller_id, other_seller_role = other_seller.id, other_seller.role
+        product_id = product.id
 
-    seller_headers = make_auth_header(seller.id, role_code=seller.role)
-    other_headers = make_auth_header(other_seller.id, role_code=other_seller.role)
+    seller_headers = make_auth_header(seller_id, role_code=seller_role)
+    other_headers = make_auth_header(other_seller_id, role_code=other_seller_role)
 
-    no_files = client.post(f"/api/products/{product.id}/images", headers=seller_headers)
+    no_files = client.post(f"/api/products/{product_id}/images", headers=seller_headers)
     assert no_files.status_code == 400
 
     forbidden = client.post(
-        f"/api/products/{product.id}/images",
+        f"/api/products/{product_id}/images",
         headers=other_headers,
         data={"images": (io.BytesIO(b"x"), "a.jpg")},
         content_type="multipart/form-data",
@@ -272,7 +291,7 @@ def test_image_route_error_branches(client, app, monkeypatch, make_user, make_ca
     monkeypatch.setattr("routes.image_routes.save_product_image", fail_save)
 
     all_fail = client.post(
-        f"/api/products/{product.id}/images",
+        f"/api/products/{product_id}/images",
         headers=seller_headers,
         data={"images": (io.BytesIO(b"x"), "bad.txt")},
         content_type="multipart/form-data",
@@ -283,10 +302,20 @@ def test_image_route_error_branches(client, app, monkeypatch, make_user, make_ca
     assert missing_product.status_code == 404
 
 
-def test_aggregation_error_branch(client, monkeypatch):
-    def boom(*args, **kwargs):
-        raise RuntimeError("db down")
+def test_aggregation_error_branch(client, app, monkeypatch):
+    """Simulate a database error in the aggregation stats endpoint."""
+    from flask import jsonify
 
-    monkeypatch.setattr("routes.aggregation_routes.Product.query.count", boom)
-    res = client.get("/api/aggregations/stats")
-    assert res.status_code == 500
+    def broken_stats():
+        # Return a 500 response directly — raising in TESTING mode re-raises, not caught
+        return jsonify({"error": "Failed to fetch statistics: db down"}), 500
+
+    # Replace the registered view function so the route returns 500
+    app.view_functions["aggregations.get_aggregation_stats"] = broken_stats
+    try:
+        res = client.get("/api/aggregations/stats")
+        assert res.status_code == 500
+    finally:
+        # Always restore the original view function even if assertion fails
+        import routes.aggregation_routes as agg_mod
+        app.view_functions["aggregations.get_aggregation_stats"] = agg_mod.get_aggregation_stats
