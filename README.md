@@ -82,7 +82,7 @@ This repository tracks my weekly learning and project development from Week 1 to
 **Run:** `docker-compose up -d` then `python week-5/main.py`
 
 ### [Week 10: Product Image Upload API](./week-10/README.md)
-**Status:** In Progress ⏳
+**Status:** Completed ✅
 
 - **Project:** E-commerce API with multi-image upload and thumbnail generation
 - **Skills:** Flask, JWT Authentication, PostgreSQL, Docker, Pillow, API Design, File Uploads
@@ -96,6 +96,28 @@ This repository tracks my weekly learning and project development from Week 1 to
 
 **Run:** `docker-compose up -d` then `python week-10/main.py`
 
+### [Week 11: Testing](./week-11/README.md)
+**Status:** Completed ✅
+
+- **Project:** Backend testing and coverage validation
+- **Skills:** Pytest, API testing, coverage reporting, test fixtures, mocking
+- **Highlights:**
+	- Added unit and integration tests for the Flask backend
+	- Generated coverage reports and postman test collection
+	- Validated auth, CRUD, and image upload flows
+	- Documented test execution and coverage results
+
+### [Week 12: Deployment](./week-12/README.md)
+**Status:** In Progress ⏳
+
+- **Project:** Render deployment for the Flask backend
+- **Skills:** Render, PostgreSQL, environment variables, deployment config
+- **Highlights:**
+	- Prepared Render blueprint and deployment guide
+	- Configured production database handling
+	- Documented deployment flow and submission deliverables
+	- Kept S3 support as a later bonus step
+
 ---
 
 ## Quick Links
@@ -108,10 +130,11 @@ This repository tracks my weekly learning and project development from Week 1 to
 | [4](./week-4) | Student Database System | Completed ✅ |
 | [5](./week-5) | User Notes API | Completed ✅ |
 | 6-9 | *Already present in repo* | Completed ✅ |
-| 10 | Product Image Upload API | In Progress ⏳ |
-| 11-12 | *Coming with tasks* | Pending |
+| [10](./week-10) | Product Image Upload API | Completed ✅ |
+| [11](./week-11) | Testing | Completed ✅ |
+| [12](./week-12) | Deployment | In Progress ⏳ |
 
-**Note:** Weeks 1-9 are completed in the repository, and week 10 is still in progress. New week folders will be created as tasks are assigned.
+**Note:** Weeks 1-11 are completed in the repository, and week 12 is the current deployment week.
 
 ---
 
@@ -228,7 +251,8 @@ Innovature/
 │   ├── static/
 │   ├── docker-compose.yml
 │   └── README.md
-└── week-12/             # (Upcoming)
+├── week-11/             # Testing and coverage
+└── week-12/             # Deployment on Render
 ```
 
 ---
@@ -254,8 +278,8 @@ This is an ongoing project tracking my learning journey. Each week, I'll add new
 
 ---
 
-**Last Updated:** April 3, 2026
-**Current Week:** 10
+**Last Updated:** April 19, 2026
+**Current Week:** 12
 
 ## Installation & Setup
 

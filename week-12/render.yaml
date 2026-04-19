@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: week12-ecommerce-api
+    env: python
+    rootDir: week-12
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app --bind 0.0.0.0:$PORT
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: FLASK_ENV
+        value: production
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: STORAGE_BACKEND
+        value: local
+      - key: DATABASE_URL
+        fromDatabase:
+          name: week12-ecommerce-db
+          property: connectionString
+
+databases:
+  - name: week12-ecommerce-db
+    databaseName: ecommerce_db
+    user: ecommerce_user
