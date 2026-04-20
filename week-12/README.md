@@ -94,6 +94,6 @@ Detailed Render steps are in `DEPLOYMENT.md`.
 
 ## Deliverable Checklist
 
-- Live app URL: add after deployment
+- Live app URL: https://e-commerce-api-lh0b.onrender.com
 - Repo path: this `week-12` folder
 - Deployment guide: `DEPLOYMENT.md`
