@@ -1,0 +1,168 @@
+/* Dashboard.module.css */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.9fr);
+  gap: 20px;
+  padding: 28px;
+  border-radius: 28px;
+  border: 1px solid var(--border-color);
+  background:
+    linear-gradient(135deg, rgba(16, 28, 49, 0.96), rgba(8, 18, 32, 0.96)),
+    radial-gradient(circle at top right, rgba(79, 209, 197, 0.14), transparent 36%);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: auto -120px -130px auto;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.16) 0%, transparent 70%);
+}
+
+.heroCopy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.heroEyebrow {
+  display: inline-flex;
+  width: fit-content;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(79, 209, 197, 0.12);
+  border: 1px solid rgba(79, 209, 197, 0.22);
+  color: #9ff3e9;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  font-size: clamp(1.6rem, 2.4vw, 2.75rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  max-width: 14ch;
+}
+
+.heroText {
+  max-width: 64ch;
+  color: var(--text-secondary);
+  font-size: 0.98rem;
+}
+
+.heroActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.primaryAction,
+.secondaryAction {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.primaryAction {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-indigo));
+  color: #04111b;
+  box-shadow: 0 16px 30px rgba(56, 189, 248, 0.18);
+}
+
+.primaryAction:hover {
+  transform: translateY(-1px);
+}
+
+.secondaryAction {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.secondaryAction:hover {
+  border-color: var(--border-hover);
+  background: rgba(79, 209, 197, 0.08);
+}
+
+.heroPanel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 14px;
+  align-content: center;
+}
+
+.heroMetric {
+  padding: 18px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.heroMetricLabel {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.heroMetricValue {
+  font-size: 1.8rem;
+  letter-spacing: -0.05em;
+}
+
+.heroTrendUp,
+.heroTrendDown {
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.heroTrendUp {
+  color: #9af5d2;
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.heroTrendDown {
+  color: #fb7185;
+  background: rgba(244, 63, 94, 0.12);
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+}
