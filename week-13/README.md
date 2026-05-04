@@ -1,38 +1,24 @@
 # Week 13 - React Basics Dashboard
 
-A React dashboard UI built for Week 13 of the Innovature coursework. The project demonstrates JSX syntax, reusable components, props, CSS Modules, and inline styles in a polished, responsive admin-style layout.
+Week 13 is a Vite + React admin dashboard built as a frontend-only coursework project. It demonstrates component composition, prop-driven rendering, CSS Modules, and a mock-data layout that looks and behaves like a lightweight operations console.
 
-## What is included
+## What This Project Shows
 
-- A fixed sidebar navigation with active state handling
-- A sticky top header with search, notifications, and user controls
-- A dashboard hero section with summary metrics
-- Reusable statistic cards for KPI-style data
-- A recent activity table for transactions and actions
-- An announcements feed with priority badges
-- Responsive layouts using CSS Modules and media queries
-- Mock data-driven UI for easy extension
+- A persistent left sidebar with active navigation state
+- A top header with page title and user context
+- A dashboard canvas with KPI cards, recent activity, and announcements
+- Mock data rendered through reusable components
+- Responsive layout behavior for tablet and mobile widths
+- Decorative gradients and CSS variables for a more polished UI
 
 ## Tech Stack
 
 - React 18
 - Vite
 - CSS Modules
-- Plain CSS variables for theme tokens
+- Plain CSS for global tokens and layout rules
 
-## Project Structure
-
-- `src/App.jsx` - root layout shell and page switching
-- `src/components/Sidebar` - left navigation
-- `src/components/Header` - top bar with greeting and controls
-- `src/components/Dashboard` - dashboard composition
-- `src/components/StatCard` - reusable KPI card
-- `src/components/StatsGrid` - responsive stats grid
-- `src/components/RecentItems` - recent activity table
-- `src/components/Announcements` - announcement list
-- `src/data/mockData.js` - static content used by the UI
-
-## Setup and Run
+## Run Locally
 
 From the `week-13` folder:
 
@@ -41,44 +27,60 @@ npm install
 npm run dev
 ```
 
-To create a production build:
+Production build:
 
 ```bash
 npm run build
 ```
 
-To preview the production build locally:
+Preview the production build locally:
 
 ```bash
 npm run preview
 ```
 
-## Responsive Behavior
+## Project Structure
 
-The interface adapts across common screen sizes:
+- `src/main.jsx` boots the React app
+- `src/App.jsx` controls the dashboard shell and page switching
+- `src/App.module.css` defines the overall app layout and background decoration
+- `src/index.css` provides global theme tokens and resets
+- `src/components/Sidebar` renders the navigation rail
+- `src/components/Header` renders the top bar
+- `src/components/Dashboard` assembles the dashboard content
+- `src/components/StatCard` renders a single KPI card
+- `src/components/StatsGrid` arranges KPI cards into a responsive grid
+- `src/components/RecentItems` renders the activity table
+- `src/components/Announcements` renders the notice feed
+- `src/data/mockData.js` stores the static demo content
 
-- The sidebar slides off-canvas on smaller screens
-- The hero section switches to a stacked layout on narrower widths
-- The stats grid drops from 4 columns to 2 and then to 1
-- The main content area collapses into a single column on tablet-sized screens
-- The header search and user controls compress for mobile widths
+## Data Model
 
-## Evaluation
+The dashboard is intentionally driven by static data so the UI stays easy to demo and extend.
 
-The assignment requirements are covered well:
+- `statsData` holds KPI labels, values, trends, and colors
+- `recentItems` holds recent user or order activity rows
+- `announcements` holds announcement cards with priority levels
+- `currentUser` stores the header/sidebar identity block
+- `navItems` defines the sidebar navigation list
 
-- JSX syntax is used throughout the components
-- The UI is decomposed into reusable components with props
-- CSS Modules are used for local styling, with inline styles for dynamic accents
-- The dashboard includes the required stats, recent items, and announcements sections
-- The layout is responsive and visually coherent
+## Behavior Notes
 
-Current limitations are intentional for the assignment scope:
+- The Dashboard route is the only fully implemented view right now.
+- Other sidebar items show a simple placeholder state to keep navigation functional.
+- Search, filter, export, and action controls are presentational and not wired to a backend.
+- The app uses mock content so it can run without any external services.
 
-- Non-dashboard sidebar items currently show placeholder pages
-- Search, filter, export, load more, and action buttons are presentational only
-- The content is driven by mock data rather than a live backend
+## Responsive Design
 
-## Demo Notes
+The layout adapts across screen sizes:
 
-The app is ready to demo by running the Vite dev server locally. The included `dist` folder shows the production build output generated from the current source.
+- The sidebar collapses away on smaller screens
+- The main content spacing tightens on tablet and mobile widths
+- The dashboard content stacks into a single column as the viewport narrows
+- The header controls remain compact instead of overflowing
+
+## Deliverable Notes
+
+- This folder contains the complete source for the Week 13 dashboard.
+- The checked-in `dist` folder reflects a production build generated from the current source.

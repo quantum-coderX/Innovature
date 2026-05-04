@@ -118,6 +118,17 @@ This repository tracks my weekly learning and project development from Week 1 to
 	- Documented deployment flow and submission deliverables
 	- Kept S3 support as a later bonus step
 
+### [Week 13: React Basics Dashboard](./week-13/README.md)
+**Status:** Completed ✅
+
+- **Project:** Responsive React dashboard UI
+- **Skills:** JSX, React components, props, CSS Modules, inline styles, responsive UI
+- **Highlights:**
+	- Built reusable components for stats, recent items, and announcements
+	- Added a polished dashboard shell with sidebar, header, and hero summary
+	- Used CSS Modules and inline styles for local styling and dynamic accents
+	- Documented setup, responsiveness, and assignment evaluation in the week README
+
 ---
 
 ## Quick Links
@@ -133,8 +144,9 @@ This repository tracks my weekly learning and project development from Week 1 to
 | [10](./week-10) | Product Image Upload API | Completed ✅ |
 | [11](./week-11) | Testing | Completed ✅ |
 | [12](./week-12) | Deployment | In Progress ⏳ |
+| [13](./week-13) | React Basics Dashboard | Completed ✅ |
 
-**Note:** Weeks 1-11 are completed in the repository, and week 12 is the current deployment week.
+**Note:** Weeks 1-11 are completed in the repository, week 12 is the current deployment week, and week 13 adds the React dashboard project.
 
 ---
 
@@ -252,7 +264,8 @@ Innovature/
 │   ├── docker-compose.yml
 │   └── README.md
 ├── week-11/             # Testing and coverage
-└── week-12/             # Deployment on Render
+├── week-12/             # Deployment on Render
+└── week-13/             # React basics dashboard
 ```
 
 ---
@@ -278,8 +291,8 @@ This is an ongoing project tracking my learning journey. Each week, I'll add new
 
 ---
 
-**Last Updated:** April 19, 2026
-**Current Week:** 12
+**Last Updated:** April 27, 2026
+**Current Week:** 13
 
 ## Installation & Setup
 
@@ -361,5 +374,5 @@ Adithyan Raj - [GitHub](https://github.com/quantum-coderX) | [LinkedIn](https://
 
 ---
 
-**Last Updated**: March 1, 2026
+**Last Updated**: April 27, 2026
 
