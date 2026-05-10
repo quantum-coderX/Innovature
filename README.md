@@ -2,11 +2,8 @@
 
 **CSE STUDENT @ MUTHOOT INSTITUTE OF TECHNOLOGY AND SCIENCE (MITS)**
 
-This repository tracks my weekly learning and project development from Week 1 to Week 18. Each week contains new projects, skills, and accomplishments.
+This repository tracks my weekly learning and project development from Week 1 onward. Each week contains new projects, skills, and accomplishments.
 
----
-
-## Weekly Progress
 
 ### [Week 1: Data Science Portfolio](./week-1/README.md)
 **Status:** In Progress
@@ -129,6 +126,28 @@ This repository tracks my weekly learning and project development from Week 1 to
 	- Used CSS Modules and inline styles for local styling and dynamic accents
 	- Documented setup, responsiveness, and assignment evaluation in the week README
 
+### [Week 14: Multi-Step Registration Form](./week-14/README.md)
+**Status:** Completed ✅
+
+- **Project:** Multi-step registration form with validation and persistence
+- **Skills:** React, Vite, controlled components, form validation, localStorage, CSS Modules
+- **Highlights:**
+	- Built a 3-step registration flow with progress tracking
+	- Added real-time validation for required fields and passwords
+	- Saved form state automatically in localStorage
+	- Styled the experience with a polished dark glassmorphism UI
+
+### [Week 15: Inkwell Blog Platform](./week-15/README.md)
+**Status:** Completed ✅
+
+- **Project:** Blog platform with nested routing, search params, and pagination
+- **Skills:** React Router, Vite, nested routes, URL state, pagination, CSS Modules
+- **Highlights:**
+	- Built a landing page with featured posts and blog stats
+	- Added category filtering and page-based navigation through URL search params
+	- Created dynamic post detail pages with related content
+	- Kept the app structure clean with reusable components and nested routes
+
 ---
 
 ## Quick Links
@@ -145,8 +164,10 @@ This repository tracks my weekly learning and project development from Week 1 to
 | [11](./week-11) | Testing | Completed ✅ |
 | [12](./week-12) | Deployment | In Progress ⏳ |
 | [13](./week-13) | React Basics Dashboard | Completed ✅ |
+| [14](./week-14) | Multi-Step Registration Form | Completed ✅ |
+| [15](./week-15) | Inkwell Blog Platform | Completed ✅ |
 
-**Note:** Weeks 1-11 are completed in the repository, week 12 is the current deployment week, and week 13 adds the React dashboard project.
+**Note:** The repository now includes projects through week 15, with week 12 still marked as the deployment week in progress.
 
 ---
 
@@ -265,7 +286,9 @@ Innovature/
 │   └── README.md
 ├── week-11/             # Testing and coverage
 ├── week-12/             # Deployment on Render
-└── week-13/             # React basics dashboard
+├── week-13/             # React basics dashboard
+├── week-14/             # Multi-step registration form
+└── week-15/             # Inkwell blog platform
 ```
 
 ---
@@ -291,8 +314,8 @@ This is an ongoing project tracking my learning journey. Each week, I'll add new
 
 ---
 
-**Last Updated:** April 27, 2026
-**Current Week:** 13
+**Last Updated:** May 10, 2026
+**Current Week:** 15
 
 ## Installation & Setup
 
@@ -371,8 +394,4 @@ This project is open source and available under the MIT License.
 ## Author
 
 Adithyan Raj - [GitHub](https://github.com/quantum-coderX) | [LinkedIn](https://linkedin.com)
-
----
-
-**Last Updated**: April 27, 2026
 

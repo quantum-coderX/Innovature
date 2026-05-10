@@ -1,0 +1,43 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.resultCount {
+  text-align: center;
+  font-size: 0.82rem;
+  color: #475569;
+  margin-bottom: 1.75rem;
+}
+
+.resultCount strong {
+  color: #94a3b8;
+}
+
+.empty {
+  text-align: center;
+  padding: 5rem 1rem;
+  color: #475569;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+}
